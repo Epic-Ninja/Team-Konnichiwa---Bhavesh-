@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Echoes - Study Journal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&amp;family=Hanken+Grotesk:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#c8c5ca",
+                    "inverse-surface": "#e5e2e1",
+                    "inverse-on-surface": "#313030",
+                    "surface-dim": "#131313",
+                    "surface-card": "#1F1F23",
+                    "on-primary-fixed": "#1b1c14",
+                    "on-error": "#690005",
+                    "primary": "#fffff1",
+                    "surface": "#131313",
+                    "tertiary-fixed-dim": "#cfc3c9",
+                    "on-primary-fixed-variant": "#46483e",
+                    "on-primary-container": "#63645a",
+                    "primary-fixed-dim": "#c7c7bb",
+                    "secondary": "#c8c5ca",
+                    "surface-container-lowest": "#0e0e0e",
+                    "error": "#ffb4ab",
+                    "background": "#131313",
+                    "on-secondary-fixed": "#1b1b1e",
+                    "on-secondary-fixed-variant": "#47464a",
+                    "outline": "#919189",
+                    "text-muted": "#666666",
+                    "secondary-container": "#47464a",
+                    "outline-variant": "#474740",
+                    "on-tertiary": "#362e33",
+                    "on-tertiary-fixed": "#201a1e",
+                    "on-tertiary-container": "#6a6166",
+                    "on-secondary": "#303033",
+                    "surface-bright": "#3a3939",
+                    "on-secondary-container": "#b6b4b8",
+                    "on-surface": "#e5e2e1",
+                    "tertiary": "#fffdff",
+                    "surface-variant": "#353534",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary-fixed": "#e4e1e6",
+                    "surface-container-highest": "#353534",
+                    "primary-fixed": "#e3e3d6",
+                    "on-error-container": "#ffdad6",
+                    "on-background": "#e5e2e1",
+                    "accent-olive": "#848D78",
+                    "accent-indigo": "#6366F1",
+                    "tertiary-container": "#ebdee4",
+                    "surface-tint": "#c7c7bb",
+                    "tertiary-fixed": "#ecdfe5",
+                    "on-primary": "#303128",
+                    "surface-container": "#201f1f",
+                    "primary-container": "#e2e2d5",
+                    "inverse-primary": "#5e5f55",
+                    "accent-emerald": "#5E8C7E",
+                    "error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#4d4449",
+                    "accent-clay": "#D97757",
+                    "surface-container-low": "#1c1b1b",
+                    "on-surface-variant": "#c8c7be"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "element-gap": "16px",
+                    "card-padding": "20px",
+                    "page-margin": "24px",
+                    "section-gap": "48px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["literata"],
+                    "headline-lg": ["literata"],
+                    "display-lg": ["literata"],
+                    "body-lg": ["hankenGrotesk"],
+                    "label-caps": ["jetbrainsMono"],
+                    "headline-md": ["literata"],
+                    "body-sm": ["hankenGrotesk"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "display-lg": ["42px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-card {
+            background: rgba(31, 31, 35, 0.4);
+            backdrop-filter: blur(8px);
+            border: 0.5px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s ease;
+        }
+        .glass-card:hover {
+            background: rgba(31, 31, 35, 0.7);
+            transform: translateY(-4px) scale(1.01);
+        }
+        .asymmetric-stack > *:nth-child(even) {
+            margin-left: 2rem;
+        }
+        .asymmetric-stack > *:nth-child(odd) {
+            margin-right: 2rem;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #353534;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="w-full top-0 sticky z-40 bg-transparent flex justify-between items-center px-page-margin pt-8 pb-4 w-full">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary dark:text-primary transition-opacity hover:opacity-80">arrow_back</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-on-surface">Echoes</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A close-up, high-fashion portrait of a young academic woman with a focused expression, wearing wire-rimmed glasses. The lighting is moody and cinematic with soft amber highlights against a dark, minimalist background. The aesthetic is clean, intellectual, and sophisticated, matching a dark-themed premium digital journal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4EXTmErTumgT_fZHLFTgok5js0t7xIJ4Rd_iXp8YLnQa69ouWELwwrBbgxESselWgYif2ThngmbT-BwtGABlKveIJTKBDYCPRwI95TYySWbesZVoJtY-lnuWWSJMUn73g1o4YL6Pexv1x450eRy7YXvGGOF5ZZeqEGAyacM-Do5qcr99mQJesTSfEvTA67UOeUjQwv-6-dTFFXdPTxngpo7mjZG2iN7caYgF2UsG57yHyQyQ_QrjXow"/>
+</div>
+</header>
+<main class="max-w-2xl mx-auto px-page-margin mt-12 space-y-section-gap">
+<!-- Today Section -->
+<section>
+<div class="flex items-center gap-4 mb-8">
+<span class="font-label-caps text-label-caps text-accent-olive">TODAY</span>
+<div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+</div>
+<div class="asymmetric-stack space-y-element-gap">
+<!-- Notification 1 -->
+<div class="glass-card rounded-[24px] p-card-padding flex gap-4 items-start group">
+<div class="w-10 h-10 rounded-full bg-accent-olive/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-accent-olive" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+</div>
+<div class="space-y-1">
+<p class="font-body-lg text-body-lg text-on-surface">AI Suggestion: Your focus peaks at 10 AM</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70">Based on your last 7 days of deep work logs.</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant pt-2">2H AGO</p>
+</div>
+</div>
+<!-- Notification 2 -->
+<div class="glass-card rounded-[24px] p-card-padding flex gap-4 items-start border-l-4 border-l-accent-clay/40">
+<div class="w-10 h-10 rounded-full bg-accent-clay/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-accent-clay" style="font-variation-settings: 'FILL' 1;">priority_high</span>
+</div>
+<div class="space-y-1">
+<p class="font-body-lg text-body-lg text-on-surface">Deadline: Architecture Project due in 3 days</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70">Ensure all renders are exported in high resolution.</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant pt-2">5H AGO</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Yesterday Section -->
+<section>
+<div class="flex items-center gap-4 mb-8">
+<span class="font-label-caps text-label-caps text-on-surface-variant">YESTERDAY</span>
+<div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+</div>
+<div class="asymmetric-stack space-y-element-gap">
+<!-- Notification 3 -->
+<div class="glass-card rounded-[24px] p-card-padding flex gap-4 items-start opacity-80">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 0;">warning</span>
+</div>
+<div class="space-y-1">
+<p class="font-body-lg text-body-lg text-on-surface">Attendance: 2 sessions missed</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70">History of Modern Art - Prof. Arisawa.</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant pt-2">YESTERDAY, 4:15 PM</p>
+</div>
+</div>
+<!-- Notification 4 -->
+<div class="glass-card rounded-[24px] p-card-padding flex gap-4 items-start opacity-80">
+<div class="w-10 h-10 rounded-full bg-accent-emerald/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-accent-emerald" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="space-y-1">
+<p class="font-body-lg text-body-lg text-on-surface">Weekly Review Compiled</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70">Your academic progress report is ready for viewing.</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant pt-2">YESTERDAY, 9:00 AM</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Earlier Section -->
+<section>
+<div class="flex items-center gap-4 mb-8">
+<span class="font-label-caps text-label-caps text-on-surface-variant">EARLIER</span>
+<div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+</div>
+<div class="space-y-4">
+<!-- Notification 5 -->
+<div class="glass-card rounded-[24px] p-card-padding flex gap-4 items-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant">history_edu</span>
+</div>
+<div class="flex-grow">
+<p class="font-body-sm text-body-sm text-on-surface">Reflection prompt: What did you learn from the last failure?</p>
+</div>
+<span class="font-label-caps text-[9px] text-on-surface-variant shrink-0">OCT 12</span>
+</div>
+<!-- Notification 6 -->
+<div class="glass-card rounded-[24px] p-card-padding flex gap-4 items-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant">person_add</span>
+</div>
+<div class="flex-grow">
+<p class="font-body-sm text-body-sm text-on-surface">Kaito shared a new note: 'Structural Mechanics II'</p>
+</div>
+<span class="font-label-caps text-[9px] text-on-surface-variant shrink-0">OCT 10</span>
+</div>
+</div>
+</section>
+<!-- Aesthetic Empty Space (Ma) -->
+<div class="h-24"></div>
+</main>
+<!-- Bottom Nav Bar (Floating Dock) -->
+<nav class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex justify-around items-center px-4 py-3 bg-surface-container/60 backdrop-blur-md w-[90%] max-w-md rounded-full border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.2)]">
+<button class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">home</span>
+</button>
+<button class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">event_note</span>
+</button>
+<button class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">calendar_month</span>
+</button>
+<button class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">menu_book</span>
+</button>
+<!-- Active Tab: Notifications (Echoes maps most closely to chat_bubble/inbox intent) -->
+<button class="flex items-center justify-center bg-primary text-on-primary rounded-full w-12 h-12 transition-all duration-300 transform scale-110 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+</button>
+</nav>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.98) translateY(0px)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'translateY(-4px) scale(1.01)';
+            });
+        });
+
+        // Atmospheric parallax on scroll
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const headers = document.querySelectorAll('section span.text-label-caps');
+            headers.forEach(header => {
+                header.style.transform = `translateX(${scrolled * 0.05}px)`;
+            });
+        });
+    </script>
+</body></html>

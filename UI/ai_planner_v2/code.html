@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Digital Sanctuary | Your Map v2</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&amp;family=Hanken+Grotesk:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        body {
+            background-color: #131313;
+            background-image: radial-gradient(circle, #353534 1px, transparent 1px);
+            background-size: 32px 32px;
+            overflow-x: hidden;
+        }
+
+        .paper-card {
+            background: #e5e2e1;
+            color: #131313;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1), 0 0 2px rgba(0,0,0,0.05);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+            cursor: grab;
+        }
+        
+        .paper-card:active {
+            cursor: grabbing;
+            transform: scale(0.98) rotate(-1deg);
+        }
+
+        .paper-card:hover {
+            box-shadow: 10px 10px 25px rgba(0,0,0,0.3);
+            transform: translateY(-4px) rotate(1deg);
+        }
+
+        .glass-panel {
+            background: rgba(31, 31, 35, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bottom-sheet {
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .bottom-sheet.open {
+            transform: translateY(0);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .transition-slide {
+            animation: slideIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .connection-line {
+            stroke: #474740;
+            stroke-dasharray: 4;
+            animation: dash 20s linear infinite;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: -100; }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#fffff1",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-secondary-fixed-variant": "#47464a",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-container": "#6a6166",
+                        "tertiary-fixed-dim": "#cfc3c9",
+                        "tertiary-container": "#ebdee4",
+                        "primary-container": "#e2e2d5",
+                        "inverse-surface": "#e5e2e1",
+                        "on-secondary": "#303033",
+                        "text-muted": "#666666",
+                        "surface-container": "#201f1f",
+                        "secondary-fixed-dim": "#c8c5ca",
+                        "surface": "#131313",
+                        "error-container": "#93000a",
+                        "accent-emerald": "#5E8C7E",
+                        "surface-dim": "#131313",
+                        "on-secondary-fixed": "#1b1b1e",
+                        "secondary-container": "#47464a",
+                        "surface-tint": "#c7c7bb",
+                        "surface-variant": "#353534",
+                        "inverse-on-surface": "#313030",
+                        "on-error": "#690005",
+                        "accent-indigo": "#6366F1",
+                        "on-tertiary-fixed-variant": "#4d4449",
+                        "tertiary-fixed": "#ecdfe5",
+                        "on-primary-fixed-variant": "#46483e",
+                        "on-background": "#e5e2e1",
+                        "on-secondary-container": "#b6b4b8",
+                        "on-primary-fixed": "#1b1c14",
+                        "on-primary-container": "#63645a",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-bright": "#3a3939",
+                        "surface-container-highest": "#353534",
+                        "tertiary": "#fffdff",
+                        "on-primary": "#303128",
+                        "on-tertiary": "#362e33",
+                        "secondary-fixed": "#e4e1e6",
+                        "surface-container-low": "#1c1b1b",
+                        "on-surface-variant": "#c8c7be",
+                        "secondary": "#c8c5ca",
+                        "on-tertiary-fixed": "#201a1e",
+                        "accent-olive": "#848D78",
+                        "inverse-primary": "#5e5f55",
+                        "primary-fixed": "#e3e3d6",
+                        "surface-card": "#1F1F23",
+                        "on-surface": "#e5e2e1",
+                        "background": "#131313",
+                        "outline-variant": "#474740",
+                        "outline": "#919189",
+                        "primary-fixed-dim": "#c7c7bb",
+                        "accent-clay": "#D97757",
+                        "error": "#ffb4ab"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "element-gap": "16px",
+                        "section-gap": "48px",
+                        "page-margin": "24px",
+                        "card-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["hankenGrotesk"],
+                        "headline-md": ["literata"],
+                        "body-sm": ["hankenGrotesk"],
+                        "display-lg": ["literata"],
+                        "label-caps": ["jetbrainsMono"],
+                        "headline-lg-mobile": ["literata"],
+                        "headline-lg": ["literata"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "display-lg": ["42px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen text-on-background relative overflow-x-hidden">
+<!-- Canvas SVG Overlay -->
+<svg class="fixed inset-0 w-full h-full pointer-events-none z-0" xmlns="http://www.w3.org/2000/svg">
+<path class="connection-line" d="M 100 200 Q 200 300 300 150" fill="transparent"></path>
+<path class="connection-line" d="M 300 500 Q 150 600 50 450" fill="transparent"></path>
+</svg>
+<!-- Header -->
+<header class="w-full top-0 left-0 fixed z-40 bg-transparent flex justify-between items-center px-page-margin py-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">menu</span>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Digital Sanctuary</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9SHLi7M5Hnxwx2g_Av9FG39gOwPi5eiKATjUDlMoGYWBEVI9s4gyY-1GexEu0qVrRhLbH8OYMI0NQ92s-m6vC4_m7kkzHqJ8bVfx8AbZTS-S2VZEnJTWpFBZJxQSDQL864oB6bs4mZm2j9yQTuejv8scQ_LBdecUENFfus5FX8HUBzxSrBDF_ztthwAHQG3Ig7j22EecRxQZwR_JaznuFbve6xaokpzOBQY0Z1AfOZOkGdvm1xMyCVw"/>
+</div>
+</header>
+<main class="relative z-10 pt-28 px-page-margin pb-48 transition-slide">
+<div class="mb-10">
+<p class="font-label-caps text-label-caps text-accent-emerald mb-2 tracking-widest uppercase">Version 2.0</p>
+<h2 class="font-display-lg text-display-lg italic text-primary leading-none">The Strategy.</h2>
+</div>
+<div class="space-y-6">
+<!-- Task Paper Card 1 -->
+<div class="paper-card p-6 rounded-sm w-full transform hover:-rotate-1" onclick="openTaskSheet('UI Flow Audit', 'High', '92%', '3h')">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-[10px] bg-black/5 px-2 py-0.5 rounded">#RESEARCH</span>
+<span class="material-symbols-outlined text-[18px]">drag_indicator</span>
+</div>
+<p class="font-headline-md text-headline-md italic leading-tight text-surface mb-4">Audit the 'Ma' (Negative Space) in current UI flow.</p>
+<div class="flex justify-between items-center border-t border-black/5 pt-4">
+<span class="font-label-caps text-[11px] opacity-60 uppercase">Priority: High</span>
+<span class="font-label-caps text-[11px] opacity-60">OCT 24</span>
+</div>
+</div>
+<!-- Task Paper Card 2 -->
+<div class="paper-card p-6 rounded-sm w-full transform rotate-1 bg-accent-olive/10 border border-black/5" onclick="openTaskSheet('Asset Color Palette', 'Med', '85%', '1.5h')">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-[10px] bg-black/5 px-2 py-0.5 rounded">#ASSET</span>
+<span class="material-symbols-outlined text-[18px]">palette</span>
+</div>
+<p class="font-headline-md text-headline-md italic leading-tight text-surface mb-4">Finalize clay-tone palette for navigation states.</p>
+<div class="flex justify-between items-center border-t border-black/5 pt-4">
+<span class="font-label-caps text-[11px] opacity-60 uppercase">Priority: Med</span>
+<span class="font-label-caps text-[11px] opacity-60">OCT 25</span>
+</div>
+</div>
+<!-- AI Suggestion Glass Panel -->
+<div class="glass-panel p-card-padding rounded-2xl border-accent-indigo/20 mt-8">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-accent-indigo" data-icon="auto_awesome">auto_awesome</span>
+<p class="font-label-caps text-label-caps text-accent-indigo uppercase tracking-wider">AI Suggestion</p>
+</div>
+<p class="font-body-lg text-on-surface italic">"Merge the 'Archive' and 'Journal' into a single timeline to reduce cognitive load by 15%."</p>
+</div>
+</div>
+<!-- Action Pill Buttons -->
+<div class="fixed bottom-28 left-0 right-0 z-40 px-page-margin flex justify-center gap-2">
+<button class="bg-surface-container-high border border-outline-variant/30 text-on-surface px-6 py-3 rounded-full font-label-caps text-[10px] tracking-widest uppercase hover:bg-surface-bright transition-colors">Reject</button>
+<button class="bg-primary text-background px-8 py-3 rounded-full font-label-caps text-[10px] tracking-widest uppercase shadow-xl font-bold">Accept Plan</button>
+<button class="bg-surface-container-high border border-outline-variant/30 text-on-surface px-4 py-3 rounded-full flex items-center justify-center hover:bg-surface-bright transition-colors">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+</button>
+</div>
+</main>
+<!-- Bottom Sheet Modal -->
+<div class="fixed inset-0 bg-black/60 z-50 hidden opacity-0 transition-opacity duration-300 pointer-events-none" id="backdrop" onclick="closeTaskSheet()"></div>
+<div class="bottom-sheet fixed bottom-0 left-0 right-0 z-50 bg-surface-container-lowest rounded-t-[32px] p-8 border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]" id="taskSheet">
+<div class="w-12 h-1 bg-outline-variant/30 rounded-full mx-auto mb-8"></div>
+<div class="mb-8">
+<span class="font-label-caps text-accent-emerald tracking-widest uppercase text-[10px]">Strategic Task</span>
+<h3 class="font-headline-lg text-headline-lg text-primary mt-2" id="sheetTitle">Task Details</h3>
+</div>
+<div class="grid grid-cols-3 gap-4 mb-10">
+<div class="bg-surface-container rounded-2xl p-4 text-center border border-white/5">
+<span class="block font-label-caps text-on-surface-variant text-[9px] mb-1">PRIORITY</span>
+<span class="font-headline-md text-accent-clay text-[18px]" id="sheetPriority">High</span>
+</div>
+<div class="bg-surface-container rounded-2xl p-4 text-center border border-white/5">
+<span class="block font-label-caps text-on-surface-variant text-[9px] mb-1">CONFIDENCE</span>
+<span class="font-headline-md text-accent-emerald text-[18px]" id="sheetConfidence">92%</span>
+</div>
+<div class="bg-surface-container rounded-2xl p-4 text-center border border-white/5">
+<span class="block font-label-caps text-on-surface-variant text-[9px] mb-1">ESTIMATE</span>
+<span class="font-headline-md text-primary text-[18px]" id="sheetTime">3h</span>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container py-4 rounded-full font-label-caps tracking-widest text-[12px] uppercase font-bold" onclick="closeTaskSheet()">Return to Map</button>
+</div>
+<!-- Navigation Dock -->
+<nav class="fixed bottom-8 left-0 right-0 z-50 flex justify-center items-center px-4">
+<div class="bg-surface/80 backdrop-blur-2xl w-full max-w-[400px] rounded-full border border-white/10 shadow-2xl flex px-2 py-2 justify-between items-center">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home_max</span>
+<span class="font-label-caps text-[9px] mt-1">Home</span>
+</a>
+<!-- Planner (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary text-background rounded-full px-5 py-2 scale-105 shadow-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-caps text-[9px] mt-1">Planner</span>
+</a>
+<!-- Calendar -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-caps text-[9px] mt-1">Events</span>
+</a>
+<!-- Subjects -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-caps text-[9px] mt-1">Subjects</span>
+</a>
+<!-- Chat -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">chat_bubble_outline</span>
+<span class="font-label-caps text-[9px] mt-1">Chat</span>
+</a>
+</div>
+</nav>
+<script>
+        function openTaskSheet(title, priority, confidence, time) {
+            const sheet = document.getElementById('taskSheet');
+            const backdrop = document.getElementById('backdrop');
+            
+            document.getElementById('sheetTitle').innerText = title;
+            document.getElementById('sheetPriority').innerText = priority;
+            document.getElementById('sheetConfidence').innerText = confidence;
+            document.getElementById('sheetTime').innerText = time;
+
+            backdrop.classList.remove('hidden');
+            setTimeout(() => {
+                backdrop.classList.add('opacity-100', 'pointer-events-auto');
+                sheet.classList.add('open');
+            }, 10);
+        }
+
+        function closeTaskSheet() {
+            const sheet = document.getElementById('taskSheet');
+            const backdrop = document.getElementById('backdrop');
+            
+            sheet.classList.remove('open');
+            backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+            setTimeout(() => {
+                backdrop.classList.add('hidden');
+            }, 500);
+        }
+
+        // Draggable interaction placeholder
+        document.querySelectorAll('.paper-card').forEach(card => {
+            card.addEventListener('touchstart', (e) => {
+                card.style.zIndex = '100';
+            });
+            card.addEventListener('touchend', (e) => {
+                card.style.zIndex = 'auto';
+            });
+        });
+    </script>
+</body></html>

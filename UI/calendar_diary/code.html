@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Study Journal - Editorial Calendar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&amp;family=Hanken+Grotesk:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#c8c5ca",
+                    "inverse-surface": "#e5e2e1",
+                    "inverse-on-surface": "#313030",
+                    "surface-dim": "#131313",
+                    "surface-card": "#1F1F23",
+                    "on-primary-fixed": "#1b1c14",
+                    "on-error": "#690005",
+                    "primary": "#fffff1",
+                    "surface": "#131313",
+                    "tertiary-fixed-dim": "#cfc3c9",
+                    "on-primary-fixed-variant": "#46483e",
+                    "on-primary-container": "#63645a",
+                    "primary-fixed-dim": "#c7c7bb",
+                    "secondary": "#c8c5ca",
+                    "surface-container-lowest": "#0e0e0e",
+                    "error": "#ffb4ab",
+                    "background": "#131313",
+                    "on-secondary-fixed": "#1b1b1e",
+                    "on-secondary-fixed-variant": "#47464a",
+                    "outline": "#919189",
+                    "text-muted": "#666666",
+                    "secondary-container": "#47464a",
+                    "outline-variant": "#474740",
+                    "on-tertiary": "#362e33",
+                    "on-tertiary-fixed": "#201a1e",
+                    "on-tertiary-container": "#6a6166",
+                    "on-secondary": "#303033",
+                    "surface-bright": "#3a3939",
+                    "on-secondary-container": "#b6b4b8",
+                    "on-surface": "#e5e2e1",
+                    "tertiary": "#fffdff",
+                    "surface-variant": "#353534",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary-fixed": "#e4e1e6",
+                    "surface-container-highest": "#353534",
+                    "primary-fixed": "#e3e3d6",
+                    "on-error-container": "#ffdad6",
+                    "on-background": "#e5e2e1",
+                    "accent-olive": "#848D78",
+                    "accent-indigo": "#6366F1",
+                    "tertiary-container": "#ebdee4",
+                    "surface-tint": "#c7c7bb",
+                    "tertiary-fixed": "#ecdfe5",
+                    "on-primary": "#303128",
+                    "surface-container": "#201f1f",
+                    "primary-container": "#e2e2d5",
+                    "inverse-primary": "#5e5f55",
+                    "accent-emerald": "#5E8C7E",
+                    "error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#4d4449",
+                    "accent-clay": "#D97757",
+                    "surface-container-low": "#1c1b1b",
+                    "on-surface-variant": "#c8c7be"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "element-gap": "16px",
+                    "card-padding": "20px",
+                    "page-margin": "24px",
+                    "section-gap": "48px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Literata"],
+                    "headline-lg": ["Literata"],
+                    "display-lg": ["Literata"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "label-caps": ["JetBrains Mono"],
+                    "headline-md": ["Literata"],
+                    "body-sm": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "display-lg": ["42px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+            background: rgba(31, 31, 35, 0.4);
+        }
+
+        .micro-shadow {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .date-strip-mask {
+            mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Micro-interactions */
+        .hover-lift {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="w-full top-0 sticky z-40 flex justify-between items-center px-page-margin pt-8 pb-4 w-full bg-transparent no-border flat no shadows">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:opacity-80 transition-opacity">arrow_back</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Study Journal</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover" data-alt="A cinematic, high-fashion portrait of a young academic woman with glasses, looking thoughtfully off-camera. The lighting is moody and low-key, with warm amber highlights against a dark, minimalist background. The aesthetic is clean and editorial, matching a high-end lifestyle magazine style with deep shadows and sharp focus on textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP-SLSntC74YMTwIzPdSqzx-isqsXXDBw4GSJi20zf5F_Rk-TMQ-HShYNQuZ75Ucz9taizEGCTY8cBSIQjVcNHuOIly9OLeXbEulMYbXLyeYkH_ePPvnl2wHTz3san_hsBOVx7iYAcWaBs9N_poYau07SabKVmdZ6UIItsAqRLvKr31VnSTp0SzVyBPwtBU-FxRVmEuUDur60W4l8onaVbFgsc_tGk4rZSCotw0S4hOU0p6ElVA0Hf1A"/>
+</div>
+</header>
+<main class="px-page-margin space-y-section-gap pt-4">
+<!-- Countdown Section -->
+<section class="relative overflow-hidden rounded-[24px] p-8 glass-panel micro-shadow">
+<div class="relative z-10">
+<span class="font-label-caps text-label-caps text-accent-clay uppercase tracking-widest mb-2 block">Upcoming Milestone</span>
+<h2 class="font-display-lg text-display-lg text-primary max-w-[280px]">14 Days Until Architecture Midterm</h2>
+<div class="mt-6 flex items-center gap-2 text-accent-olive">
+<span class="material-symbols-outlined text-[18px]">history_edu</span>
+<span class="font-body-sm text-body-sm">Final Project: Brutalist Structures</span>
+</div>
+</div>
+<!-- Decorative hand-drawn sketch style background element -->
+<div class="absolute -right-8 -bottom-8 opacity-20 transform rotate-12 pointer-events-none">
+<span class="material-symbols-outlined text-[160px] font-thin">architecture</span>
+</div>
+</section>
+<!-- Magazine Style Header & Date Picker -->
+<section class="space-y-8">
+<div class="flex justify-between items-baseline">
+<h3 class="font-display-lg text-[64px] leading-none text-primary opacity-90 italic">October</h3>
+<span class="font-label-caps text-label-caps text-on-surface-variant">2024 / Q4</span>
+</div>
+<!-- Horizontal Date Strip -->
+<div class="relative date-strip-mask -mx-page-margin overflow-x-auto scroll-hide flex px-page-margin gap-6 items-center">
+<div class="flex flex-col items-center min-w-[48px] opacity-40">
+<span class="font-label-caps text-label-caps mb-2">MON</span>
+<span class="font-headline-md text-headline-md">11</span>
+</div>
+<div class="flex flex-col items-center min-w-[48px] opacity-40">
+<span class="font-label-caps text-label-caps mb-2">TUE</span>
+<span class="font-headline-md text-headline-md">12</span>
+</div>
+<div class="flex flex-col items-center min-w-[48px] opacity-40">
+<span class="font-label-caps text-label-caps mb-2">WED</span>
+<span class="font-headline-md text-headline-md">13</span>
+</div>
+<!-- Active Day -->
+<div class="flex flex-col items-center min-w-[64px] text-primary relative">
+<span class="font-label-caps text-label-caps mb-2">THU</span>
+<span class="font-display-lg text-[32px] font-bold">14</span>
+<div class="absolute -bottom-4 w-1 h-1 rounded-full bg-accent-clay"></div>
+</div>
+<div class="flex flex-col items-center min-w-[48px] opacity-40">
+<span class="font-label-caps text-label-caps mb-2">FRI</span>
+<span class="font-headline-md text-headline-md">15</span>
+</div>
+<div class="flex flex-col items-center min-w-[48px] opacity-40">
+<span class="font-label-caps text-label-caps mb-2">SAT</span>
+<span class="font-headline-md text-headline-md">16</span>
+</div>
+<div class="flex flex-col items-center min-w-[48px] opacity-40">
+<span class="font-label-caps text-label-caps mb-2">SUN</span>
+<span class="font-headline-md text-headline-md">17</span>
+</div>
+</div>
+</section>
+<!-- Timeline Section (Asymmetric / Overlapping) -->
+<section class="space-y-element-gap relative">
+<div class="absolute left-4 top-0 bottom-0 w-[1px] bg-outline-variant/30"></div>
+<!-- Study Block 1 -->
+<div class="relative pl-12 pb-8 group">
+<div class="absolute left-[14px] top-6 w-2 h-2 rounded-full bg-accent-olive z-10 border-2 border-background"></div>
+<div class="surface-card rounded-[24px] p-card-padding micro-shadow hover-lift border border-white/5 relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="font-label-caps text-label-caps text-accent-olive mb-1 block">09:00 — 11:30</span>
+<h4 class="font-headline-md text-headline-md text-on-surface">Brutalist Textures Review</h4>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">more_horiz</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 leading-relaxed max-w-[85%]">
+                        Deep dive into concrete casting techniques and the socio-political origins of the Brutalist movement in post-war Britain.
+                    </p>
+<button class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded-full font-label-caps text-label-caps hover:opacity-90 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+                        Start Focus
+                    </button>
+<!-- Visual texture element -->
+<div class="absolute top-0 right-0 w-24 h-full bg-gradient-to-l from-white/5 to-transparent pointer-events-none"></div>
+</div>
+</div>
+<!-- Overlapping Assignment Card -->
+<div class="relative pl-12 -mt-4 pb-8 group">
+<div class="absolute left-[14px] top-6 w-2 h-2 rounded-full bg-accent-clay z-10 border-2 border-background"></div>
+<div class="bg-surface-container-high rounded-[24px] p-card-padding micro-shadow hover-lift border border-white/5 relative z-10 transform translate-x-4">
+<div class="flex items-center gap-3 mb-3">
+<span class="font-label-caps text-label-caps px-2 py-1 bg-accent-clay/10 text-accent-clay rounded">ASSIGNMENT</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">DUE 23:59</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-2">History of Urban Planning</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic">Reflective Essay (2,500 words)</p>
+<div class="mt-4 flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up detail of architectural drafting tools on a dark oak desk. Fine-liner pens, a brass compass, and a textured paper sketch are illuminated by a warm, focused desk lamp. The scene is intimate and intellectual, captured with a shallow depth of field in a sophisticated dark-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhQb3JjvWS6hjNTNroShZZ-K_CVHgeonnxwDtj0HiXTTJpDMlLVTe9QH0P5jXh_TCY8palyk0umhBUBlfT3D-JVJM0vSSBJYwzUK1uyThKnm6hp3h5hPKV_5oLpNObe8C_rXXSeChTXjvN1FPzoANLtv0OnJzuBHgCL_A8Kttp6NJLhW_tHMmL3NA6Xzk0BfrMeirHRYqYcmc8jijrRbKoxTKZKCPt3uD845vDHPQYq4arODQQKCeRtQ"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-high bg-accent-olive flex items-center justify-center text-[10px] font-bold">
+                            +3
+                        </div>
+</div>
+</div>
+</div>
+<!-- Study Block 2 -->
+<div class="relative pl-12 pb-8 group">
+<div class="absolute left-[14px] top-6 w-2 h-2 rounded-full bg-accent-olive z-10 border-2 border-background"></div>
+<div class="surface-card rounded-[24px] p-card-padding micro-shadow hover-lift border border-white/5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="font-label-caps text-label-caps text-accent-olive mb-1 block">14:00 — 15:30</span>
+<h4 class="font-headline-md text-headline-md text-on-surface">Spatial Theory Lab</h4>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">more_horiz</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex-1 h-[2px] bg-outline-variant/30 rounded-full overflow-hidden">
+<div class="w-[45%] h-full bg-accent-olive"></div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">45m REMAINING</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex justify-around items-center px-4 py-3 bg-surface-container-low/40 backdrop-blur-xl rounded-full border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.2)] w-[90%] max-w-md">
+<!-- Home -->
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+</a>
+<!-- Stats -->
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">event_note</span>
+</a>
+<!-- Calendar (ACTIVE) -->
+<a class="flex items-center justify-center bg-primary text-on-primary rounded-full w-12 h-12 transition-all duration-300 transform scale-110" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+</a>
+<!-- Library -->
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+</a>
+<!-- Chat -->
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+</a>
+</nav>
+<!-- Subtle Background Shader Simulation -->
+<div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+<div class="absolute top-1/4 -right-1/4 w-[600px] h-[600px] bg-accent-olive/5 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-1/4 -left-1/4 w-[500px] h-[500px] bg-accent-clay/5 blur-[100px] rounded-full"></div>
+</div>
+<script>
+        // Micro-interaction for date selection
+        document.querySelectorAll('.date-strip-mask > div').forEach(date => {
+            date.addEventListener('click', function() {
+                // In a real app, this would change state
+                document.querySelectorAll('.date-strip-mask > div').forEach(d => {
+                    d.classList.add('opacity-40');
+                    d.classList.remove('text-primary', 'scale-110');
+                    const dot = d.querySelector('.bg-accent-clay');
+                    if(dot) dot.remove();
+                });
+                
+                this.classList.remove('opacity-40');
+                this.classList.add('text-primary');
+                
+                // Add dot if not present
+                if(!this.querySelector('.bg-accent-clay')) {
+                    const dot = document.createElement('div');
+                    dot.className = 'absolute -bottom-4 w-1 h-1 rounded-full bg-accent-clay';
+                    this.appendChild(dot);
+                }
+            });
+        });
+
+        // Parallax effect on cards based on scroll
+        window.addEventListener('scroll', () => {
+            const cards = document.querySelectorAll('.hover-lift');
+            cards.forEach((card, index) => {
+                const speed = (index + 1) * 0.05;
+                const yPos = -(window.scrollY * speed);
+                card.style.transform = `translateY(${yPos}px)`;
+            });
+        });
+    </script>
+</body></html>
