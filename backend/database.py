@@ -114,3 +114,16 @@ def init_db():
 
     conn.commit()
     conn.close()
+
+import time
+def add_subject(title: str, module: str = "CORE MODULE", progress: int = 50, attendance: int = 90, credits: float = 4.0):
+    conn = get_db()
+    cursor = conn.cursor()
+    subject_id = f"s_{int(time.time())}"
+    cursor.execute("""
+        INSERT INTO subjects (id, title, module, progress, attendance, credits, next_lesson, image_url)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+    """, (subject_id, title, module, progress, attendance, credits, "Unit Overview & Revision", ""))
+    conn.commit()
+    conn.close()
+    return {"id": subject_id, "title": title, "module": module, "progress": progress, "attendance": attendance}

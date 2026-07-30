@@ -382,7 +382,7 @@
                     <h1 class="font-display-lg text-display-lg text-primary">Your Subjects</h1>
                     <p class="font-body-sm text-on-surface-variant text-xs mt-1">Curated academic pursuits synced with Python SQLite DB.</p>
                 </div>
-                <button onclick="openUploadWizard()" class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded-full font-label-caps text-xs font-semibold hover:scale-105 shadow-md">+ ADD NEW SUBJECT</button>
+                <button onclick="openAddSubjectModal()" class="bg-accent-indigo text-primary px-6 py-2.5 rounded-full font-label-caps text-xs font-bold hover:scale-105 transition-transform shadow-xl">+ ADD NEW SUBJECT</button>
             </div>
             <div id="subjects-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
         </section>
@@ -654,6 +654,42 @@
         </div>
     </div>
 
+    <!-- ADD CUSTOM SUBJECT MODAL -->
+    <div id="add-subject-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-surface-card border border-accent-indigo/40 rounded-[32px] p-8 max-w-lg w-full shadow-2xl space-y-6 glow-indigo">
+            <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                <div class="flex items-center gap-2 text-accent-indigo">
+                    <span class="material-symbols-outlined text-2xl">library_add</span>
+                    <h3 class="font-headline-lg text-2xl text-primary font-bold">Add Custom Subject</h3>
+                </div>
+                <button onclick="closeAddSubjectModal()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div class="space-y-4 text-xs font-body-sm">
+                <div>
+                    <label class="font-label-caps text-accent-indigo block mb-1 font-bold">📖 SUBJECT TITLE</label>
+                    <input id="new-subject-title" type="text" placeholder="e.g. Computer Science 101 or Quantum Physics" class="w-full bg-[#181818] text-primary border border-white/20 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-accent-indigo font-bold shadow-inner"/>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="font-label-caps text-on-surface-variant block mb-1 font-bold">🏷️ MODULE / PHASE</label>
+                        <input id="new-subject-module" type="text" value="MODULE 01" class="w-full bg-[#181818] text-primary border border-white/20 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent-indigo font-bold shadow-inner"/>
+                    </div>
+                    <div>
+                        <label class="font-label-caps text-accent-emerald block mb-1 font-bold">🎯 ATTENDANCE %</label>
+                        <input id="new-subject-attendance" type="number" value="90" min="0" max="100" class="w-full bg-[#181818] text-primary border border-white/20 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent-emerald font-bold shadow-inner"/>
+                    </div>
+                </div>
+                <div>
+                    <label class="font-label-caps text-on-surface-variant block mb-1 font-bold">📊 INITIAL PROGRESS %</label>
+                    <input id="new-subject-progress" type="number" value="50" min="0" max="100" class="w-full bg-[#181818] text-primary border border-white/20 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent-indigo font-bold shadow-inner"/>
+                </div>
+            </div>
+            <button onclick="submitNewSubject()" class="w-full bg-accent-indigo text-primary py-3 rounded-full font-label-caps text-xs font-bold shadow-xl hover:scale-105 transition-transform">
+                Save Subject to SQLite DB →
+            </button>
+        </div>
+    </div>
+
     <div id="graph-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-surface-card border border-accent-emerald/40 rounded-[32px] p-8 max-w-2xl w-full shadow-2xl space-y-6 glow-emerald">
             <div class="flex justify-between items-center border-b border-white/10 pb-4">
@@ -762,11 +798,36 @@
                 `).join('');
 
                 document.getElementById('subjects-grid-container').innerHTML = data.subjects.map(s => `
-                    <div class="glass-panel p-6 rounded-[24px] space-y-2 hover:border-accent-indigo/50 transition-all">
-                        <h3 class="font-headline-md text-lg text-primary font-medium">${s.title}</h3>
-                        <p class="font-label-caps text-xs text-on-surface-variant">${s.progress}% Complete • Attendance: ${s.attendance}%</p>
+                    <div class="glass-panel p-6 rounded-[24px] space-y-3 hover:border-accent-indigo/50 transition-all border border-white/10 glow-indigo">
+                        <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                            <span class="font-label-caps text-xs text-accent-indigo font-bold">${s.module || 'CORE MODULE'}</span>
+                            <span class="font-label-caps text-[10px] ${s.attendance < 75 ? 'bg-accent-clay/20 text-accent-clay border-accent-clay/40' : 'bg-accent-emerald/20 text-accent-emerald border-accent-emerald/40'} px-2.5 py-0.5 rounded-full border font-bold">Attendance: ${s.attendance}%</span>
+                        </div>
+                        <h3 class="font-headline-md text-xl text-primary font-bold">${s.title}</h3>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[11px] font-label-caps text-on-surface-variant">
+                                <span>Syllabus Progress</span>
+                                <span>${s.progress}%</span>
+                            </div>
+                            <div class="w-full bg-surface-bright rounded-full h-2 overflow-hidden">
+                                <div class="bg-accent-indigo h-full rounded-full" style="width: ${s.progress}%;"></div>
+                            </div>
+                        </div>
+                        <div class="pt-2 flex justify-between items-center text-xs">
+                            <span class="text-on-surface-variant text-[11px]">Credits: ${s.credits || 4.0}</span>
+                            <button onclick="switchTab('aitools'); document.getElementById('tool-subject-select').value='${s.title}';" class="text-accent-indigo font-bold hover:underline font-label-caps text-[11px]">Generate Tools →</button>
+                        </div>
                     </div>
                 `).join('');
+
+                if (document.getElementById('tool-subject-select') && data.subjects) {
+                    const sel = document.getElementById('tool-subject-select');
+                    const currentVal = sel.value;
+                    sel.innerHTML = data.subjects.map(s => `<option value="${s.title}" class="bg-surface text-primary">${s.title}</option>`).join('');
+                    if (currentVal && data.subjects.some(s => s.title === currentVal)) {
+                        sel.value = currentVal;
+                    }
+                }
 
                 document.getElementById('planner-tasks-container').innerHTML = data.tasks.map(t => `
                     <div class="paper-card p-6 rounded-sm w-full ${t.bg_color}">
@@ -776,6 +837,36 @@
                     </div>
                 `).join('');
 
+            } catch(e) { console.error(e); }
+        }
+
+        function openAddSubjectModal() { document.getElementById('add-subject-modal').classList.remove('hidden'); }
+        function closeAddSubjectModal() { document.getElementById('add-subject-modal').classList.add('hidden'); }
+
+        async function submitNewSubject() {
+            const title = document.getElementById('new-subject-title').value.trim();
+            const module = document.getElementById('new-subject-module').value.trim();
+            const attendance = document.getElementById('new-subject-attendance').value;
+            const progress = document.getElementById('new-subject-progress').value;
+
+            if (!title) { alert("Please enter a subject title."); return; }
+
+            try {
+                const res = await fetch(`${API_BASE}/subjects/add`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        title: title,
+                        module: module || "MODULE 01",
+                        attendance: parseInt(attendance) || 90,
+                        progress: parseInt(progress) || 50
+                    })
+                });
+                const result = await res.json();
+                alert(`✓ Subject '${title}' saved to SQLite DB!`);
+                closeAddSubjectModal();
+                document.getElementById('new-subject-title').value = '';
+                fetchDashboardFromPython();
             } catch(e) { console.error(e); }
         }
 

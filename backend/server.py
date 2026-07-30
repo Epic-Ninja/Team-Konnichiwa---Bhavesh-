@@ -277,6 +277,16 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
             self._set_cors_headers(200)
             self.wfile.write(json.dumps({"status": "PROCESSED", "data": processed}).encode('utf-8'))
 
+        elif path == "/api/v1/subjects/add":
+            title = body.get("title", "Custom Subject").strip()
+            module = body.get("module", "CORE MODULE").strip()
+            progress = int(body.get("progress", 50))
+            attendance = int(body.get("attendance", 90))
+            from database import add_subject
+            new_sub = add_subject(title, module, progress, attendance)
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps({"status": "SUCCESS", "subject": new_sub}).encode('utf-8'))
+
         elif path == "/api/v1/user/settings":
             name = body.get("name", "Bhavesh Dhidaria")
             focus_window = body.get("focus_window", "09:00 AM - 11:30 AM")
