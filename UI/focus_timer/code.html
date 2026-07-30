@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Study Journal - Pomodoro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,400;0,500;0,600;1,400&amp;family=Hanken+Grotesk:wght@300;400;500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        @keyframes breath {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.02); opacity: 0.6; }
+        }
+        
+        .breathing-ring {
+            animation: breath 8s ease-in-out infinite;
+        }
+
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hide scrollbars */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#c8c5ca",
+                        "inverse-surface": "#e5e2e1",
+                        "inverse-on-surface": "#313030",
+                        "surface-dim": "#131313",
+                        "surface-card": "#1F1F23",
+                        "on-primary-fixed": "#1b1c14",
+                        "on-error": "#690005",
+                        "primary": "#fffff1",
+                        "surface": "#131313",
+                        "tertiary-fixed-dim": "#cfc3c9",
+                        "on-primary-fixed-variant": "#46483e",
+                        "on-primary-container": "#63645a",
+                        "primary-fixed-dim": "#c7c7bb",
+                        "secondary": "#c8c5ca",
+                        "surface-container-lowest": "#0e0e0e",
+                        "error": "#ffb4ab",
+                        "background": "#131313",
+                        "on-secondary-fixed": "#1b1b1e",
+                        "on-secondary-fixed-variant": "#47464a",
+                        "outline": "#919189",
+                        "text-muted": "#666666",
+                        "secondary-container": "#47464a",
+                        "outline-variant": "#474740",
+                        "on-tertiary": "#362e33",
+                        "on-tertiary-fixed": "#201a1e",
+                        "on-tertiary-container": "#6a6166",
+                        "on-secondary": "#303033",
+                        "surface-bright": "#3a3939",
+                        "on-secondary-container": "#b6b4b8",
+                        "on-surface": "#e5e2e1",
+                        "tertiary": "#fffdff",
+                        "surface-variant": "#353534",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary-fixed": "#e4e1e6",
+                        "surface-container-highest": "#353534",
+                        "primary-fixed": "#e3e3d6",
+                        "on-error-container": "#ffdad6",
+                        "on-background": "#e5e2e1",
+                        "accent-olive": "#848D78",
+                        "accent-indigo": "#6366F1",
+                        "tertiary-container": "#ebdee4",
+                        "surface-tint": "#c7c7bb",
+                        "tertiary-fixed": "#ecdfe5",
+                        "on-primary": "#303128",
+                        "surface-container": "#201f1f",
+                        "primary-container": "#e2e2d5",
+                        "inverse-primary": "#5e5f55",
+                        "accent-emerald": "#5E8C7E",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#4d4449",
+                        "accent-clay": "#D97757",
+                        "surface-container-low": "#1c1b1b",
+                        "on-surface-variant": "#c8c7be"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "element-gap": "16px",
+                        "card-padding": "20px",
+                        "page-margin": "24px",
+                        "section-gap": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Literata"],
+                        "headline-lg": ["Literata"],
+                        "display-lg": ["Literata"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Literata"],
+                        "body-sm": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "display-lg": ["42px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-lg text-body-lg min-h-screen flex flex-col overflow-hidden">
+<!-- Top App Bar (Shared Component) -->
+<header class="w-full top-0 sticky z-50 flex justify-between items-center px-page-margin pt-8 pb-4 w-full bg-transparent no-border flat no shadows">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:opacity-80 transition-opacity">arrow_back</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-on-surface tracking-tight">Study Journal</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover" data-alt="A professional, artistic close-up portrait of a student with a thoughtful expression, set in a dimly lit library with soft bokeh highlights. The style is cinematic and moody, using deep shadows and warm ivory tones to match the luxury stationery aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf8SZBTO-EiWrLoQlrIik0vtY6YEyslQ6_jqO8EkrvPopcH8ompX45B7abuj5XgANZO46zsOcCtbxQBzsb29ftQ7j-gnAhuRjnhtUHkjL0Sp6XBtF3-WU8nB9URAF3U2k2kUz-MHX_bUMM_LF21vXNnYEhssNRmKcLkwKV_HQU02gA-E1Enf1l1JDYI77HtWXzJ3KAG4cFqDMS86G2Z0kMMtl72-9tOBDQ-JU4Vk93SI90NnsLfCf7hg"/>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center justify-center relative px-page-margin pb-32">
+<!-- Ambient Background Illustration -->
+<div class="absolute inset-0 z-0 flex items-center justify-center opacity-40 pointer-events-none overflow-hidden">
+<div class="relative w-full max-w-lg aspect-square">
+<!-- Gaussian Blurred Zen Circle -->
+<div class="absolute inset-0 bg-gradient-to-tr from-accent-olive/10 to-transparent blur-[100px] rounded-full scale-150"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<img class="w-3/4 opacity-20 contrast-125 filter grayscale" data-alt="A charcoal-style, fine-liner sketch of a steaming porcelain coffee cup sitting on a rustic wooden desk. The steam rises in elegant, minimal swirls, blending into the dark background. The lighting is low-key, focusing on the texture of the charcoal and the soft glow of the cup's rim." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR3LFPf6J8ny1k0YrlNKjyCWA6hZ9yFehb-GBqN_zQWsiSA78vw2Tjpidb1w06br57RzctBm2ZUw6ful1cOkM1QzpL0LmP2dtRIKo6ssyZ0tkKQCCWJoSxQ-itUpg0_Kt6tIz-Lg_Pu4O0Kz0Rz_G4aPLosBmlC42tmEmkmBCAimxFuND81lIFcXsjyCX-4R94U0PBPihwzjAyy54_lYj1SOEbmuBjQyUnK1UCke9VA4Vk22Rezr5FnQ"/>
+</div>
+</div>
+</div>
+<!-- Timer Section -->
+<div class="relative z-10 flex flex-col items-center">
+<!-- Progress Ring -->
+<div class="relative w-72 h-72 md:w-96 md:h-96 flex items-center justify-center">
+<svg class="absolute inset-0 w-full h-full -rotate-90">
+<circle class="text-outline/10" cx="50%" cy="50%" fill="none" r="48%" stroke="currentColor" stroke-width="1"></circle>
+<circle class="text-primary-container transition-all duration-1000 ease-linear" cx="50%" cy="50%" fill="none" id="timer-progress" r="48%" stroke="currentColor" stroke-dasharray="1000" stroke-dashoffset="250" stroke-linecap="round" stroke-width="1.5"></circle>
+</svg>
+<!-- Breathing Ambient Ring -->
+<div class="absolute inset-0 border border-primary/5 rounded-full breathing-ring"></div>
+<!-- Clock Display -->
+<div class="text-center">
+<span class="font-display-lg text-[80px] md:text-[120px] text-primary tracking-tighter tabular-nums select-none" id="timer-display">25:00</span>
+<div class="mt-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant tracking-[0.2em]">FOCUS SESSION</span>
+</div>
+</div>
+</div>
+<!-- Task Card -->
+<div class="mt-section-gap w-full max-w-xs glass-panel bg-surface-container/30 rounded-2xl p-card-padding flex items-center gap-4 transition-all duration-500 hover:bg-surface-container/50">
+<div class="w-10 h-10 rounded-full bg-accent-olive/20 flex items-center justify-center text-accent-olive">
+<span class="material-symbols-outlined text-[20px]">menu_book</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest">Current Task</span>
+<span class="font-body-lg text-body-lg text-primary">Architecture 101 Chapters</span>
+</div>
+</div>
+</div>
+<!-- Control Buttons -->
+<div class="mt-section-gap flex gap-4 z-10">
+<button class="px-8 py-3 rounded-full bg-primary-container text-on-primary font-body-lg font-medium transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2" id="toggle-btn">
+<span class="material-symbols-outlined" id="play-icon">pause</span>
+<span>Pause</span>
+</button>
+<button class="px-8 py-3 rounded-full border border-outline-variant text-on-surface font-body-lg font-medium transition-all duration-300 hover:bg-surface-container-high active:scale-95 flex items-center gap-2" id="reset-btn">
+<span class="material-symbols-outlined">restart_alt</span>
+<span>Reset</span>
+</button>
+</div>
+</main>
+<!-- Bottom Navigation (Shared Component) -->
+<nav class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex justify-around items-center px-4 py-3 bg-surface-container-low/40 backdrop-blur-xl rounded-full border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.2)] w-[90%] max-w-md">
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">event_note</span>
+</a>
+<a class="flex items-center justify-center bg-primary text-on-primary rounded-full w-12 h-12 transition-all duration-300 transform scale-110" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+</a>
+</nav>
+<script>
+        // Simple Timer Logic for visualization
+        let seconds = 1500; // 25 minutes
+        let timerId = null;
+        const display = document.getElementById('timer-display');
+        const progressRing = document.getElementById('timer-progress');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const playIcon = document.getElementById('play-icon');
+        const toggleText = toggleBtn.querySelector('span:not(.material-symbols-outlined)');
+
+        const totalLength = 1000; // Simplified dasharray match
+
+        function updateDisplay() {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            // Update progress ring (clockwise depletion)
+            const percentage = seconds / 1500;
+            progressRing.style.strokeDashoffset = totalLength * (1 - percentage);
+        }
+
+        function startTimer() {
+            if (timerId) return;
+            timerId = setInterval(() => {
+                if (seconds > 0) {
+                    seconds--;
+                    updateDisplay();
+                } else {
+                    clearInterval(timerId);
+                    timerId = null;
+                }
+            }, 1000);
+            playIcon.textContent = 'pause';
+            toggleText.textContent = 'Pause';
+        }
+
+        function stopTimer() {
+            clearInterval(timerId);
+            timerId = null;
+            playIcon.textContent = 'play_arrow';
+            toggleText.textContent = 'Resume';
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            if (timerId) stopTimer();
+            else startTimer();
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            stopTimer();
+            seconds = 1500;
+            updateDisplay();
+            playIcon.textContent = 'play_arrow';
+            toggleText.textContent = 'Start';
+        });
+
+        // Initialize display
+        updateDisplay();
+        startTimer(); // Auto-start for preview
+    </script>
+</body></html>

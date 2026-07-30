@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Study Journal - Your Rhythm</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&amp;family=Hanken+Grotesk:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .glass-panel {
+            background: rgba(31, 31, 35, 0.4);
+            backdrop-filter: blur(12px);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+        }
+        .soft-shadow {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+        .wave-container {
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        .mask-dappled {
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+        }
+    </style>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#c8c5ca",
+                    "inverse-surface": "#e5e2e1",
+                    "inverse-on-surface": "#313030",
+                    "surface-dim": "#131313",
+                    "surface-card": "#1F1F23",
+                    "on-primary-fixed": "#1b1c14",
+                    "on-error": "#690005",
+                    "primary": "#fffff1",
+                    "surface": "#131313",
+                    "tertiary-fixed-dim": "#cfc3c9",
+                    "on-primary-fixed-variant": "#46483e",
+                    "on-primary-container": "#63645a",
+                    "primary-fixed-dim": "#c7c7bb",
+                    "secondary": "#c8c5ca",
+                    "surface-container-lowest": "#0e0e0e",
+                    "error": "#ffb4ab",
+                    "background": "#131313",
+                    "on-secondary-fixed": "#1b1b1e",
+                    "on-secondary-fixed-variant": "#47464a",
+                    "outline": "#919189",
+                    "text-muted": "#666666",
+                    "secondary-container": "#47464a",
+                    "outline-variant": "#474740",
+                    "on-tertiary": "#362e33",
+                    "on-tertiary-fixed": "#201a1e",
+                    "on-tertiary-container": "#6a6166",
+                    "on-secondary": "#303033",
+                    "surface-bright": "#3a3939",
+                    "on-secondary-container": "#b6b4b8",
+                    "on-surface": "#e5e2e1",
+                    "tertiary": "#fffdff",
+                    "surface-variant": "#353534",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary-fixed": "#e4e1e6",
+                    "surface-container-highest": "#353534",
+                    "primary-fixed": "#e3e3d6",
+                    "on-error-container": "#ffdad6",
+                    "on-background": "#e5e2e1",
+                    "accent-olive": "#848D78",
+                    "accent-indigo": "#6366F1",
+                    "tertiary-container": "#ebdee4",
+                    "surface-tint": "#c7c7bb",
+                    "tertiary-fixed": "#ecdfe5",
+                    "on-primary": "#303128",
+                    "surface-container": "#201f1f",
+                    "primary-container": "#e2e2d5",
+                    "inverse-primary": "#5e5f55",
+                    "accent-emerald": "#5E8C7E",
+                    "error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#4d4449",
+                    "accent-clay": "#D97757",
+                    "surface-container-low": "#1c1b1b",
+                    "on-surface-variant": "#c8c7be"
+            },
+            "spacing": {
+                    "element-gap": "16px",
+                    "card-padding": "20px",
+                    "page-margin": "24px",
+                    "section-gap": "48px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["literata"],
+                    "headline-lg": ["literata"],
+                    "display-lg": ["literata"],
+                    "body-lg": ["hankenGrotesk"],
+                    "label-caps": ["jetbrainsMono"],
+                    "headline-md": ["literata"],
+                    "body-sm": ["hankenGrotesk"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "display-lg": ["42px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-lg overflow-x-hidden">
+<!-- Top Navigation Anchor -->
+<header class="w-full top-0 sticky z-50 flex justify-between items-center px-page-margin pt-8 pb-4 bg-transparent no-border flat no shadows">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Study Journal</h1>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A high-end editorial headshot of a student in a minimalist study space, soft natural light from a window, cinematic focus, warm cream tones, and deep shadows consistent with a luxury wellness magazine aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIm5IJm1ibzki5nhEi8D5vPLyrBwlsVxOsMfzfr13xzDLOXUdTSCBbwP6yv4wd6V7jX2y2NFVEG0DFznofQy52n_x5RY4fJ4eqYR_BLtY02vCZBA-LgixfXGK9GqLd58JzNbG446AE5KFktPuU5avksanBR6j06IceA9XJxh5-K1Z31Bgjdj-hXt6fN8z_j_2irXIf2SOjRlNyhaP51MAKOcDSjs_7Z_HyMToSI_QCeJ_Bykrj_bvA-A"/>
+</div>
+</header>
+<main class="relative px-page-margin pb-32">
+<!-- Hero Section: Your Rhythm -->
+<section class="mt-8 mb-section-gap">
+<span class="font-label-caps text-label-caps text-accent-olive mb-2 block">WEEKLY ANALYSIS</span>
+<h2 class="font-display-lg text-display-lg max-w-xs">Your Rhythm</h2>
+<p class="text-on-surface-variant mt-4 font-body-lg max-w-sm">A quiet observation of your academic presence over the last seven solar days.</p>
+</section>
+<!-- Bento Grid Visualization -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-element-gap">
+<!-- Focus Score Wave Chart (Large) -->
+<div class="md:col-span-8 glass-panel rounded-[24px] p-card-padding min-h-[300px] flex flex-col justify-between overflow-hidden relative">
+<div>
+<h3 class="font-headline-md text-headline-md">Focus Pulse</h3>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-4xl font-headline-lg text-primary">84</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">OPTIMAL STATE</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-48 wave-container opacity-60">
+<svg class="w-full h-full preserve-3d" viewbox="0 0 1000 200">
+<path class="animate-pulse" d="M0,100 C150,20 350,180 500,100 C650,20 850,180 1000,100 L1000,200 L0,200 Z" fill="url(#wave-gradient)">
+<animate attributename="d" dur="10s" repeatcount="indefinite" values="M0,100 C150,20 350,180 500,100 C650,20 850,180 1000,100 L1000,200 L0,200 Z;
+                                        M0,100 C150,180 350,20 500,100 C650,180 850,20 1000,100 L1000,200 L0,200 Z;
+                                        M0,100 C150,20 350,180 500,100 C650,20 850,180 1000,100 L1000,200 L0,200 Z"></animate>
+</path>
+<defs>
+<lineargradient id="wave-gradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#848D78" stop-opacity="0.8"></stop>
+<stop offset="100%" stop-color="#848D78" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+<div class="flex justify-between font-label-caps text-label-caps text-on-surface-variant relative z-10 pt-20">
+<span>MON</span>
+<span>WED</span>
+<span>FRI</span>
+<span>SUN</span>
+</div>
+</div>
+<!-- Exam Readiness (Organic Radial) -->
+<div class="md:col-span-4 glass-panel rounded-[24px] p-card-padding flex flex-col items-center justify-center space-y-6">
+<div class="relative w-40 h-40 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle cx="80" cy="80" fill="transparent" r="70" stroke="#353534" stroke-width="8"></circle>
+<circle class="transition-all duration-1000" cx="80" cy="80" fill="transparent" r="70" stroke="#fffff1" stroke-dasharray="440" stroke-dashoffset="110" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute text-center">
+<span class="block font-headline-md text-headline-md">75%</span>
+<span class="block font-label-caps text-label-caps text-on-surface-variant">READY</span>
+</div>
+</div>
+<div class="text-center">
+<h3 class="font-headline-md text-headline-md mb-1">Exam Readiness</h3>
+<p class="text-body-sm text-on-surface-variant">Cognitive Science I</p>
+</div>
+</div>
+<!-- Study Consistency Heatmap (Dappled Light Style) -->
+<div class="md:col-span-6 glass-panel rounded-[24px] p-card-padding min-h-[280px]">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h3 class="font-headline-md text-headline-md">Consistency</h3>
+<p class="text-body-sm text-on-surface-variant">21 Day Streak</p>
+</div>
+<span class="material-symbols-outlined text-accent-olive">spa</span>
+</div>
+<div class="grid grid-cols-7 gap-2">
+<!-- Generating a heatmap of dots representing days -->
+<div class="flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-20"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-40"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-10"></div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-60"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-80"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-50"></div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-primary opacity-100"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-70"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-30"></div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-40"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-90"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-20"></div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-60"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-80"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-10"></div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-40"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-30"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-90"></div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-20"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-50"></div>
+<div class="w-8 h-8 rounded-full bg-accent-olive opacity-70"></div>
+</div>
+</div>
+<div class="mt-6 flex items-center justify-between font-label-caps text-[9px] text-on-surface-variant">
+<span>MORNING FLOW</span>
+<div class="flex gap-1">
+<div class="w-2 h-2 rounded-full bg-accent-olive opacity-20"></div>
+<div class="w-2 h-2 rounded-full bg-accent-olive opacity-50"></div>
+<div class="w-2 h-2 rounded-full bg-accent-olive opacity-100"></div>
+</div>
+<span>DEEP NIGHT</span>
+</div>
+</div>
+<!-- Burnout Risk (Organic Fluid Shape) -->
+<div class="md:col-span-6 glass-panel rounded-[24px] p-card-padding min-h-[280px] overflow-hidden relative">
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md">Burnout Risk</h3>
+<p class="text-body-sm text-accent-clay mt-1">LOW VIGILANCE RECOMMENDED</p>
+</div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-48 h-48 bg-accent-clay/20 blur-3xl animate-pulse absolute rounded-full"></div>
+<svg class="w-48 h-48 animate-float opacity-80" viewbox="0 0 200 200">
+<path d="M45,-62.1C58.9,-54.2,71.1,-41.8,77.3,-27.1C83.5,-12.4,83.7,4.5,78.2,19.3C72.8,34.1,61.7,46.7,48.5,56.7C35.2,66.6,19.8,73.8,3.9,68.4C-12,63.1,-28.4,45.1,-41.9,30.3C-55.4,15.5,-66,4,-67.2,-9.3C-68.4,-22.6,-60.2,-37.8,-48.3,-46.3C-36.4,-54.9,-20.8,-56.8,-3.3,-52.3C14.2,-47.8,28.4,-37,45,-62.1Z" fill="#D97757" transform="translate(100 100)"></path>
+</svg>
+<div class="relative z-10 text-center">
+<span class="block font-headline-lg text-headline-lg">12%</span>
+<span class="block font-label-caps text-label-caps">STABLE</span>
+</div>
+</div>
+</div>
+<!-- Editorial Quote / Insight Card -->
+<div class="md:col-span-12 mt-4">
+<div class="bg-primary-container p-12 rounded-[24px] flex flex-col md:flex-row items-center gap-8">
+<div class="flex-1">
+<span class="font-label-caps text-label-caps text-on-primary-container mb-4 block">JOURNAL INSIGHT</span>
+<blockquote class="font-headline-lg text-headline-lg text-on-primary italic">
+                            "True focus is not the absence of noise, but the presence of intention. This week, your intention peaked during the quiet hours of Tuesday dawn."
+                        </blockquote>
+</div>
+<div class="w-32 h-32 rounded-full border-2 border-dashed border-on-primary-container flex items-center justify-center p-2">
+<img class="w-full h-full object-contain opacity-50 grayscale" data-alt="A delicate charcoal sketch of an open book with light streaming across the pages, capturing a sense of human imperfection and quiet academic study in a minimalist, high-end journal aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzFEpOA_agXEWrgKJsrP37zBPuh_3bFh5C5oKLxDuLPx05XafGtyLmCsxCUN-BxtjaRvF4CbIo1vsNzMK-RRPQ73BJoV1AJdP7oMW6JKI7iTW_5xli7osnO4ogvEMDZNMqjgSojsZhceCYryJ-fhxnxyuOWtYNnL2sCplDOgPKFl0VFxTqzvXWvquaeRYAuJaG1D3lifw8wAXlllrAdi-Jr9H5YltzfKZRSpxWM-ff6BLJXzpEfQDydw"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Dock Navigation -->
+<nav class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex justify-around items-center px-4 py-3 bg-surface-container-low/40 backdrop-blur-xl rounded-full w-[90%] max-w-md shadow-[0_12px_40px_rgba(0,0,0,0.2)] border border-white/10">
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+</a>
+<a class="flex items-center justify-center bg-primary text-on-primary rounded-full w-12 h-12 transition-all duration-300 transform scale-110" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_note</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant w-12 h-12 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+</a>
+</nav>
+</main>
+<script>
+        // Micro-interactions for the wave path
+        document.addEventListener('DOMContentLoaded', () => {
+            const path = document.querySelector('path');
+            if (path) {
+                // Subtle interaction logic can go here
+                console.log('Rhythm page initialized.');
+            }
+        });
+    </script>
+</body></html>

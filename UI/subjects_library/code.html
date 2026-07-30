@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Digital Sanctuary - Your Subjects</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&amp;family=Hanken+Grotesk:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#46483e",
+                        "accent-clay": "#D97757",
+                        "background": "#131313",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary": "#c8c5ca",
+                        "inverse-surface": "#e5e2e1",
+                        "on-tertiary": "#362e33",
+                        "secondary-fixed": "#e4e1e6",
+                        "surface-container-high": "#2a2a2a",
+                        "text-muted": "#666666",
+                        "tertiary-fixed": "#ecdfe5",
+                        "on-background": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "tertiary": "#fffdff",
+                        "on-surface": "#e5e2e1",
+                        "accent-olive": "#848D78",
+                        "on-primary-container": "#63645a",
+                        "outline": "#919189",
+                        "primary-fixed": "#e3e3d6",
+                        "primary": "#fffff1",
+                        "error-container": "#93000a",
+                        "surface-variant": "#353534",
+                        "surface-tint": "#c7c7bb",
+                        "accent-indigo": "#6366F1",
+                        "on-tertiary-fixed-variant": "#4d4449",
+                        "outline-variant": "#474740",
+                        "inverse-primary": "#5e5f55",
+                        "secondary-fixed-dim": "#c8c5ca",
+                        "primary-fixed-dim": "#c7c7bb",
+                        "on-error": "#690005",
+                        "surface-container": "#201f1f",
+                        "on-surface-variant": "#c8c7be",
+                        "surface": "#131313",
+                        "on-secondary-container": "#b6b4b8",
+                        "accent-emerald": "#5E8C7E",
+                        "inverse-on-surface": "#313030",
+                        "on-secondary": "#303033",
+                        "tertiary-container": "#ebdee4",
+                        "on-tertiary-fixed": "#201a1e",
+                        "on-secondary-fixed-variant": "#47464a",
+                        "on-secondary-fixed": "#1b1b1e",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-low": "#1c1b1b",
+                        "tertiary-fixed-dim": "#cfc3c9",
+                        "on-tertiary-container": "#6a6166",
+                        "secondary-container": "#47464a",
+                        "surface-card": "#1F1F23",
+                        "on-primary-fixed": "#1b1c14",
+                        "on-primary": "#303128",
+                        "surface-container-highest": "#353534",
+                        "primary-container": "#e2e2d5",
+                        "surface-bright": "#3a3939"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "48px",
+                        "page-margin": "24px",
+                        "card-padding": "20px",
+                        "element-gap": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["literata"],
+                        "headline-md": ["literata"],
+                        "headline-lg-mobile": ["literata"],
+                        "body-sm": ["hankenGrotesk"],
+                        "label-caps": ["jetbrainsMono"],
+                        "headline-lg": ["literata"],
+                        "body-lg": ["hankenGrotesk"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["42px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-panel {
+            background: rgba(31, 31, 35, 0.4);
+            backdrop-filter: blur(12px);
+            border: 0.5px solid rgba(255, 255, 241, 0.1);
+        }
+        .subject-card {
+            transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.3s ease;
+        }
+        .subject-card:hover {
+            transform: translateY(-4px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #474740;
+            border-radius: 10px;
+        }
+        .asymmetric-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="custom-scrollbar selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation -->
+<header class="w-full top-0 left-0 bg-transparent flex justify-between items-center w-full px-page-margin py-4 z-40 fixed">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed hover:opacity-80 transition-opacity">menu</button>
+<span class="font-headline-md text-headline-md text-primary dark:text-primary-fixed tracking-tight">Digital Sanctuary</span>
+</div>
+<div class="flex items-center gap-6">
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-label-caps text-label-caps hover:scale-105 transition-transform duration-300">
+                ADD NEW SUBJECT
+            </button>
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<img class="w-full h-auto" data-alt="A high-quality, professional headshot of a student with a calm expression, softly lit in a warm, academic setting like a quiet library. The style is cinematic and intimate, using a shallow depth of field to blur a background of antique leather-bound books. The lighting is low-key with golden highlights, consistent with a premium editorial aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjdNc7g9iEdOAuqDi_F0NODntO42nXnDtYnkSwqGmnrMhngqUwIlANWvsSaYNBwbCQlsoNSIgICM23tdoaJSB4uATC5NGoW_K2fYsgqaoDnmCYnukahveXPe3VJK0e3pDMLWWNX8dlxXntgCsiA_NqE57C12rLjQUUuZgwtGmDWdW5z4e5NXfQIIu8wx1mUrXkzZv4wrVSDrINxH5uZJVmi6iX-Z0061tAnrrm2Dv8HQeeX--IL601oQ"/>
+</div>
+</div>
+</header>
+<main class="pt-32 pb-40 px-page-margin max-w-7xl mx-auto">
+<!-- Header Section -->
+<section class="mb-section-gap">
+<h1 class="font-display-lg text-display-lg text-primary mb-2">Your Subjects</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+                A curated collection of your intellectual pursuits. Organized with intention, studied with focus.
+            </p>
+</section>
+<!-- Subjects Editorial Layout -->
+<div class="asymmetric-grid">
+<!-- 1. Architecture 101 (Large) -->
+<div class="col-span-12 md:col-span-8 group">
+<div class="subject-card glass-panel rounded-[24px] overflow-hidden relative h-[420px]">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" data-alt="A moody, high-contrast black and white photograph of a brutalist concrete building. The composition uses dramatic shadows and sharp angles to emphasize the raw texture of the material and the monumental scale of the architecture. The lighting is stark and directional, creating a powerful, intellectual atmosphere consistent with a minimalist design sanctuary." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1TYbAa3h5JEdyF9MZt7HQ-ebpCyBCWImT_FEjfDX3iGeNza0CNJRda5UQ0DP315ExdEzYIV2NZNYbrjMOKWLbqwO_I22qgrqyeUWhQZqoKG4Lgobc3D7AGmwOF7YUHZVXb8LXRkDiohW_9HmKufA7i1q-hqwwob_ahUoNdnlkuqHuFeMhVmxpd4uMUQkxOoSVfnErUBl0Ydv-T_kwa3-I2wxckF_Ccjyqc_xUiDKXsGXJJbulZepAWw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+</div>
+<div class="absolute inset-0 z-10 p-10 flex flex-col justify-end">
+<div class="flex justify-between items-end">
+<div>
+<span class="font-label-caps text-label-caps text-primary/60 mb-2 block">MODULE 04</span>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-4">Architecture 101</h2>
+<div class="flex items-center gap-4">
+<div class="h-[1px] w-24 bg-outline-variant relative">
+<div class="absolute top-0 left-0 h-full bg-primary w-[68%]"></div>
+</div>
+<span class="font-label-caps text-label-caps text-primary">68% COMPLETE</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1 block">NEXT CHAPTER</span>
+<p class="font-body-lg text-body-lg text-primary italic">The Ethics of Concrete</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. History of Urban Planning (Medium) -->
+<div class="col-span-12 md:col-span-4">
+<div class="subject-card bg-surface-card rounded-[24px] p-8 h-full flex flex-col border border-white/5">
+<div class="w-full aspect-square rounded-xl mb-6 overflow-hidden bg-accent-olive/10">
+<img class="w-full h-full object-cover mix-blend-overlay opacity-80" data-alt="A beautiful, soft sepia-toned vintage map illustration of an idealized 19th-century city layout. The drawing features fine ink lines, delicate cartography details, and an aged paper texture. The overall feel is academic and nostalgic, capturing the essence of historical urban planning with a human, hand-drawn touch in a quiet, sanctuary-like aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxnBY0CPOtrtDjoNB4G6Ke7oADINc5ciiTjfJ7rANb2vjhDrvwHbharRrsi0XWA2fvyuqny_mE2c8ix5X7_jicdXuL3DycZY6GY20a9wMygQmmI2FR865Md0Y3llYVAqF1oQOwqK_v-tWZZhu1wdoxAaoAWoswTzXaAfJNLQzUaVhc95pziOQtB9AeTe6ZIQfw-hVH04ryJ_GXz3wLMAa1wwnrcMu-SmMEECgDexZj9F8UMT0A3jcsHA"/>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary mb-2">History of Urban Planning</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-8">Exploring the evolution of the human habitat.</p>
+<div class="mt-auto">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-label-caps">PROGRESS</span>
+<span class="font-label-caps text-label-caps">45%</span>
+</div>
+<div class="h-1 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-accent-clay w-[45%]"></div>
+</div>
+<div class="mt-6 flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="font-body-sm text-body-sm">Seminar on Friday</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Spatial Theory Lab (Medium) -->
+<div class="col-span-12 md:col-span-5">
+<div class="subject-card glass-panel rounded-[24px] p-8 h-full border border-white/5">
+<div class="flex justify-between items-start mb-8">
+<div class="w-16 h-16 rounded-full flex items-center justify-center border border-primary/20 relative">
+<svg class="w-full h-full -rotate-90">
+<circle class="text-primary/10" cx="32" cy="32" fill="transparent" r="30" stroke="currentColor" stroke-width="1"></circle>
+<circle class="text-primary" cx="32" cy="32" fill="transparent" r="30" stroke="currentColor" stroke-dasharray="188.4" stroke-dashoffset="15.1" stroke-width="1"></circle>
+</svg>
+<span class="absolute font-label-caps text-[10px] text-primary">92%</span>
+</div>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-caps text-[10px]">THESIS PHASE</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary mb-4">Spatial Theory Lab</h2>
+<div class="space-y-4 mb-8">
+<div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30">
+<span class="font-label-caps text-[10px] text-on-surface-variant block mb-1">UPCOMING TASK</span>
+<p class="font-body-sm text-body-sm text-primary">Submit Final Model Photos</p>
+</div>
+</div>
+<div class="h-40 w-full overflow-hidden rounded-xl bg-background border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="A minimalist 3D geometric composition of floating white translucent planes and thin black lines against a dark charcoal background. The style is ultra-clean and modern, representing spatial theory and abstract architectural concepts. Soft, diffused lighting creates subtle gradients on the surfaces, maintaining a serene and focused mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuADQm3LmdoB5hNAA_hrKbzlZR3OS3K2nV83IKYB9kyUPfcoWrBiygG1VMggYtyxtn--9Tpp4WinAsc_A6LF-L28D5Aaw5kgbijYdZdzkmzeCVNS_ETkx8e87-lcPNk6uM8OGBoDTa10gs8w1AwxEU-ohqUMF1PfyrpP3bApU2UYNkcfDTbJgWTCfL_cTnU3oAeBoWu_UKp_tB7bmd6C-spU9Lq0xq79AqFVFZuDFWab2XzeJ6ibyMSbIQ"/>
+</div>
+</div>
+</div>
+<!-- 4. Cognitive Science I (Large-ish) -->
+<div class="col-span-12 md:col-span-7">
+<div class="subject-card bg-[#18181B] rounded-[24px] overflow-hidden flex flex-col md:flex-row h-full min-h-[340px] border border-white/5">
+<div class="w-full md:w-1/2 relative h-64 md:h-auto">
+<img class="w-full h-full object-cover opacity-80" data-alt="An abstract, organic digital artwork featuring soft, fluid shapes reminiscent of neural pathways or microscopic cellular life. The color palette consists of deep indigos, soft lavenders, and muted teals. The movement in the shapes is gentle and atmospheric, illuminated by a soft internal glow. The style is ethereal and sophisticated, representing the complexity of cognitive science within a calm sanctuary theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6OOAeQWqA830ifnryAaO8zQNaMip79fHlJ147Nbe6A7cz-Qi8Ygomv-p6DTpD3nSGRiraUf5GVqbS9hBy8qU_jMcI9ulgmr0QxBlV_OBV1kvkNGJO_ztLV24QBEImhu2_ERMJG5ACkAwrvxSftXfo1JIFTkGfqhNPGiOEAidJhB8-f_v_bMiUJPC8E1pCs0EOljbrnSrJ6Pf0FN6-iMsgp3UnojfT_enQ_22gi6U_SDdv_m99LWFBKg"/>
+</div>
+<div class="w-full md:w-1/2 p-10 flex flex-col">
+<div class="mb-auto">
+<span class="font-label-caps text-label-caps text-accent-indigo mb-2 block">INTRODUCTORY</span>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-4">Cognitive Science I</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                                An exploration into the mechanics of thought, perception, and memory.
+                            </p>
+</div>
+<div class="pt-8 border-t border-outline-variant/20">
+<div class="flex justify-between items-center mb-3">
+<span class="font-label-caps text-label-caps text-on-surface-variant">BEGINNER JOURNEY</span>
+<span class="font-label-caps text-label-caps text-primary">15% COMPLETE</span>
+</div>
+<div class="h-1 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-accent-indigo w-[15%]"></div>
+</div>
+<button class="mt-6 font-label-caps text-label-caps text-primary hover:underline underline-offset-8 transition-all flex items-center gap-2">
+                                START NEXT LESSON <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section Spacer -->
+<div class="h-section-gap"></div>
+<!-- Recent Reading / Insights Asymmetric Row -->
+<section class="grid grid-cols-12 gap-8 items-center">
+<div class="col-span-12 md:col-span-5 order-2 md:order-1">
+<div class="glass-panel p-8 rounded-3xl">
+<h3 class="font-headline-md text-headline-md text-primary mb-6">Latest Insights</h3>
+<ul class="space-y-6">
+<li class="flex gap-4 group cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-accent-clay/10 flex items-center justify-center text-accent-clay group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">auto_stories</span>
+</div>
+<div>
+<p class="font-body-lg text-body-lg text-primary leading-tight">The psychology of open-plan living</p>
+<span class="font-label-caps text-[10px] text-on-surface-variant">ARCHITECTURE • 10 MIN READ</span>
+</div>
+</li>
+<li class="flex gap-4 group cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-accent-emerald/10 flex items-center justify-center text-accent-emerald group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">lightbulb</span>
+</div>
+<div>
+<p class="font-body-lg text-body-lg text-primary leading-tight">Spatial perception in virtual environments</p>
+<span class="font-label-caps text-[10px] text-on-surface-variant">SPATIAL THEORY • 15 MIN READ</span>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="col-span-12 md:col-span-6 md:offset-1 order-1 md:order-2">
+<div class="relative h-64 md:h-80 rounded-[32px] overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover" data-alt="A serene, high-end library scene with tall shelves filled with minimalist white and grey book spines. A single, elegant reading lamp casts a warm, focused circle of light on a dark wooden table. The atmosphere is quiet, intentional, and deeply intellectual. Soft dust motes dance in the light, creating a tactile sense of presence and peace, following the Digital Sanctuary aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd8_kd99tCO4cftaR_sxAOMqb8exSquKUocyoZhpZtnr_9qq04FzRJFQhcaEEndXqK-kILMp5Fpi3yEVw1iaqeVKnhRJjzDVu9vC0xpZDPcF6UYeNNM-VNCS-Mjxsy_6gpvrwpUGTePUtE3fQFdBzFXdQ_VgQKOM2LG0W1Se_uzE7PTc4DgIie-7C0vBfO-HLPu-O7Tsme7YYZsspWqsTFpWwuCH3S47xTJhUzKPKCGvPvbnvuJc3WqA"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
+<span class="font-display-lg text-primary italic text-3xl opacity-90">"Architecture is frozen music."</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Dock -->
+<nav class="fixed bottom-8 left-0 right-0 z-50 flex justify-center items-center gap-4">
+<div class="bg-surface/60 dark:bg-surface-container/60 backdrop-blur-xl fixed bottom-6 left-1/2 -translate-x-1/2 w-auto min-w-[320px] rounded-full border-[0.5px] border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.2)] flex justify-around items-center p-2 gap-2">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-2 hover:scale-110 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined">home_max</span>
+<span class="font-label-caps text-label-caps mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary-fixed text-on-primary-container dark:text-on-primary-fixed rounded-full px-6 py-2 transition-all duration-500 scale-105" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-caps text-label-caps mt-1">Planner</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-2 hover:scale-110 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-caps text-label-caps mt-1">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-2 hover:scale-110 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined">chat_bubble_outline</span>
+<span class="font-label-caps text-label-caps mt-1">Chat</span>
+</a>
+</div>
+</nav>
+<script>
+        // Micro-interaction for subject cards
+        document.querySelectorAll('.subject-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.borderColor = 'rgba(255, 255, 241, 0.2)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.borderColor = 'rgba(255, 255, 241, 0.05)';
+            });
+        });
+
+        // Subtle parallax effect on scroll for images
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            document.querySelectorAll('img.object-cover').forEach(img => {
+                const speed = 0.05;
+                img.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+    </script>
+</body></html>
