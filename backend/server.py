@@ -33,13 +33,14 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
         path = parsed.path
+        query_params = parse_qs(parsed.query)
 
         if path == "/":
             self._set_cors_headers(200)
             res = {
                 "status": "ONLINE",
                 "system": "StudyPilot AI Agentic Backend Engine",
-                "engine": "Python Stdlib Multi-Agent Orchestrator v2.0"
+                "engine": "Python Multi-Agent Orchestrator v3.0 (Deploy-Ready API)"
             }
             self.wfile.write(json.dumps(res).encode('utf-8'))
 
@@ -54,7 +55,10 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
             tasks = [dict(r) for r in cursor.fetchall()]
             conn.close()
 
-            ai_state = orchestrator.get_dashboard_state(user, subjects, user.get("streak", 21))
+            completed_tasks = sum(1 for t in tasks if t.get("completed", 0) == 1)
+            ratio = completed_tasks / max(len(tasks), 1)
+
+            ai_state = orchestrator.get_dashboard_state(user, subjects, user.get("streak", 21), ratio)
             self._set_cors_headers(200)
             res = {
                 "user": user,
@@ -63,6 +67,83 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
                 "ai_insights": ai_state
             }
             self.wfile.write(json.dumps(res).encode('utf-8'))
+
+        elif path == "/api/v1/attendance":
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM subjects;")
+            subjects = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+
+            attendance_data = []
+            for s in subjects:
+                att = s.get("attendance", 90)
+                safe_bunks = max(0, int((att - 75) / 5)) if att >= 75 else 0
+                classes_needed = max(0, int((75 - att) * 0.4)) if att < 75 else 0
+                status = "CRITICAL_RISK" if att < 75 else ("WARNING" if att < 80 else "SAFE")
+                
+                attendance_data.append({
+                    "id": s.get("id"),
+                    "title": s.get("title"),
+                    "attendance": att,
+                    "credits": s.get("credits", 3.0),
+                    "safe_bunks": safe_bunks,
+                    "required_classes_to_recovery": classes_needed,
+                    "status": status,
+                    "recommendation": f"Attend next {classes_needed} lectures without absence to recover to 75%" if att < 75 else "Attendance level is in optimal safe zone."
+                })
+
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps({
+                "overall_status": "CRITICAL_RISK_DETECTED" if any(a["status"] == "CRITICAL_RISK" for a in attendance_data) else "SAFE",
+                "subjects": attendance_data
+            }).encode('utf-8'))
+
+        elif path == "/api/v1/gpa":
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM subjects;")
+            subjects = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+
+            gpa_breakdown = []
+            for s in subjects:
+                prog = s.get("progress", 50)
+                est_grade = "A" if prog > 80 else ("B+" if prog > 65 else "B")
+                gpa_breakdown.append({
+                    "subject": s.get("title"),
+                    "progress": prog,
+                    "projected_grade": est_grade,
+                    "credits": s.get("credits", 3.0),
+                    "readiness": f"{int(prog * 1.1)}%"
+                })
+
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps({
+                "projected_cgpa": "3.92 GPA",
+                "target_gpa": "4.00 GPA",
+                "readiness_overall": "94%",
+                "breakdown": gpa_breakdown
+            }).encode('utf-8'))
+
+        elif path == "/api/v1/graph":
+            self._set_cors_headers(200)
+            nodes = [
+                {"id": 1, "name": "Spatial Theory Lab", "type": "PREREQUISITE", "status": "COMPLETED (100%)"},
+                {"id": 2, "name": "Architecture 101: Brutalist Structures", "type": "ACTIVE_TOPIC", "status": "IN_PROGRESS (68%)"},
+                {"id": 3, "name": "Urban Planning II: Garden Cities", "type": "UPCOMING", "status": "LOCKED (45%)"}
+            ]
+            links = [
+                {"source": "Spatial Theory Lab", "target": "Architecture 101"},
+                {"source": "Architecture 101", "target": "Urban Planning II"}
+            ]
+            self.wfile.write(json.dumps({"nodes": nodes, "links": links}).encode('utf-8'))
+
+        elif path == "/api/v1/search":
+            q = query_params.get("q", ["Architecture"])[0]
+            results = orchestrator.search_rag(q)
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps({"query": q, "results": results}).encode('utf-8'))
 
         elif path == "/api/v1/tools/quiz":
             self._set_cors_headers(200)
@@ -112,6 +193,17 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
             self._set_cors_headers(200)
             self.wfile.write(json.dumps(res).encode('utf-8'))
 
+        elif path == "/api/v1/tasks/toggle":
+            task_id = body.get("task_id")
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("UPDATE tasks SET completed = CASE WHEN completed = 1 THEN 0 ELSE 1 END WHERE id = ?;", (task_id,))
+            cursor.execute("UPDATE users SET xp = xp + 50 WHERE id = 'u1';")
+            conn.commit()
+            conn.close()
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps({"status": "SUCCESS", "task_id": task_id, "xp_awarded": 50}).encode('utf-8'))
+
         elif path == "/api/v1/chat":
             msg = body.get("message", "")
             ai_response = orchestrator.process_chat_query(msg)
@@ -152,7 +244,7 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
 def run_server():
     server_address = ('0.0.0.0', PORT)
     httpd = socketserver.TCPServer(server_address, AgenticAIHandler)
-    print(f"🤖 Python Agentic AI Server running on http://0.0.0.0:{PORT}")
+    print(f"🤖 Python Agentic AI Server v3.0 running on http://0.0.0.0:{PORT}")
     httpd.serve_forever()
 
 if __name__ == "__main__":
