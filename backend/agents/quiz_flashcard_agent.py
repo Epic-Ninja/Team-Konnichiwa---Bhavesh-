@@ -185,14 +185,45 @@ class QuizFlashcardAgent:
             }
         ]
 
-        # 3. Generate To-Do Tasks, Calendar Milestones, and Daily Timetable
-        generated_tasks = [
-            {"title": f"Study Topic: {concept1} ({subject})", "tag": "#SYLLABUS", "priority": "High", "due_date": "TODAY", "estimate": "1.5h", "bg_color": "bg-[#e5e2e1]"},
-            {"title": f"Solve Module Problem Set: {concept2}", "tag": "#MODULE", "priority": "High", "due_date": "OCT 28", "estimate": "2h", "bg_color": "bg-accent-indigo/15"},
-            {"title": f"Draft Syllabus Revision Outline: {concept3}", "tag": "#ASSIGNMENT", "priority": "Med", "due_date": "OCT 31", "estimate": "2.5h", "bg_color": "bg-accent-emerald/15"}
-        ]
+        # 3. Dedicated Google Gemini AI High-Quality To-Do Task Generator
+        generated_tasks = []
+        if self.gemini.is_configured() and len(text_clean) > 20:
+            prompt_tasks = (
+                f"You are an expert AI Academic Coach generating high-quality, specific, non-repetitive study tasks from the syllabus document '{file_name}' for subject '{subject}'.\n"
+                f"DOCUMENT TEXT:\n\"\"\"\n{text_clean[:2500]}\n\"\"\"\n\n"
+                f"Generate 3 distinct, highly actionable study tasks for a student. Avoid generic phrases like 'Study Topic' or 'Review concepts'.\n"
+                f"Return ONLY raw JSON list of 3 items with structure:\n"
+                f'[\n'
+                f'  {{"title": "Actionable specific task title (e.g. Master Schrodinger Wave Equation Derivation)", "tag": "#THEORY", "priority": "High", "due_date": "TODAY", "estimate": "1.5h", "bg_color": "bg-[#e5e2e1]"}},\n'
+                f'  {{"title": "Actionable practice task title (e.g. Solve Quantum Tunneling Problem Set 2)", "tag": "#PRACTICE", "priority": "High", "due_date": "OCT 28", "estimate": "2h", "bg_color": "bg-accent-indigo/15"}},\n'
+                f'  {{"title": "Actionable synthesis task title (e.g. Draft Case Study Summary & Formula Sheet)", "tag": "#SYNTHESIS", "priority": "Med", "due_date": "OCT 31", "estimate": "1h", "bg_color": "bg-accent-emerald/15"}}\n'
+                f']\n'
+            )
+            raw_t = self.gemini.generate_content(prompt_tasks)
+            if raw_t:
+                try:
+                    js_t = raw_t.strip()
+                    if "```json" in js_t: js_t = js_t.split("```json")[1].split("```")[0].strip()
+                    elif "```" in js_t: js_t = js_t.split("```")[1].split("```")[0].strip()
+                    parsed_t = json.loads(js_t)
+                    if isinstance(parsed_t, list) and len(parsed_t) >= 2:
+                        generated_tasks = parsed_t
+                except Exception as e:
+                    print(f"Gemini Task Generation parse fallback: {e}")
 
-        # Save Subject & To-Do Tasks into SQLite Database
+        # Fallback NLP Cleaner if Gemini response unavailable
+        if not generated_tasks:
+            clean_t1 = re.sub(r'^(Unit|Chapter|Section|\d+[\.\:]\s*)+', '', concept1, flags=re.IGNORECASE).strip()
+            clean_t2 = re.sub(r'^(Unit|Chapter|Section|\d+[\.\:]\s*)+', '', concept2, flags=re.IGNORECASE).strip()
+            clean_t3 = re.sub(r'^(Unit|Chapter|Section|\d+[\.\:]\s*)+', '', concept3, flags=re.IGNORECASE).strip()
+
+            generated_tasks = [
+                {"title": f"Master Core Theory: {clean_t1} ({subject})", "tag": "#THEORY", "priority": "High", "due_date": "TODAY", "estimate": "1.5h", "bg_color": "bg-[#e5e2e1]"},
+                {"title": f"Solve Problem Set: {clean_t2}", "tag": "#PRACTICE", "priority": "High", "due_date": "OCT 28", "estimate": "2h", "bg_color": "bg-accent-indigo/15"},
+                {"title": f"Draft Analytical Outline: {clean_t3}", "tag": "#SYNTHESIS", "priority": "Med", "due_date": "OCT 31", "estimate": "1h", "bg_color": "bg-accent-emerald/15"}
+            ]
+
+        # Save Subject & To-Do Tasks into SQLite DB (with deduplication)
         import time
         try:
             conn = sqlite3.connect(DB_PATH)
@@ -208,10 +239,12 @@ class QuizFlashcardAgent:
                 """, (sub_id, subject))
 
             for t in generated_tasks:
-                cursor.execute("""
-                    INSERT INTO tasks (title, tag, priority, due_date, completed, estimate, bg_color)
-                    VALUES (?, ?, ?, ?, 0, ?, ?);
-                """, (t["title"], t["tag"], t["priority"], t["due_date"], t["estimate"], t["bg_color"]))
+                cursor.execute("SELECT COUNT(*) FROM tasks WHERE title = ?;", (t["title"],))
+                if cursor.fetchone()[0] == 0:
+                    cursor.execute("""
+                        INSERT INTO tasks (title, tag, priority, due_date, completed, estimate, bg_color)
+                        VALUES (?, ?, ?, ?, 0, ?, ?);
+                    """, (t["title"], t["tag"], t.get("priority", "High"), t.get("due_date", "TODAY"), t.get("estimate", "1.5h"), t.get("bg_color", "bg-[#e5e2e1]")))
             conn.commit()
             conn.close()
         except Exception as e:
