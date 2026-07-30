@@ -40,7 +40,7 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
             res = {
                 "status": "ONLINE",
                 "system": "StudyPilot AI Agentic Backend Engine",
-                "engine": "Python Multi-Agent Orchestrator v3.0 (Deploy-Ready API)"
+                "engine": "Python Multi-Agent Orchestrator v3.5 (Subject-Wise AI Tools + Notes Processing)"
             }
             self.wfile.write(json.dumps(res).encode('utf-8'))
 
@@ -146,13 +146,15 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"query": q, "results": results}).encode('utf-8'))
 
         elif path == "/api/v1/tools/quiz":
+            subject = query_params.get("subject", ["Architecture 101"])[0]
+            res = orchestrator.quiz.generate_quiz(subject)
             self._set_cors_headers(200)
-            res = orchestrator.quiz.generate_quiz()
             self.wfile.write(json.dumps(res).encode('utf-8'))
 
         elif path == "/api/v1/tools/flashcards":
+            subject = query_params.get("subject", ["Architecture 101"])[0]
+            res = orchestrator.quiz.generate_flashcards(subject)
             self._set_cors_headers(200)
-            res = orchestrator.quiz.generate_flashcards()
             self.wfile.write(json.dumps(res).encode('utf-8'))
 
         else:
@@ -210,6 +212,14 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
             self._set_cors_headers(200)
             self.wfile.write(json.dumps({"response": ai_response}).encode('utf-8'))
 
+        elif path == "/api/v1/upload/notes":
+            file_name = body.get("file_name", "Uploaded_Notes.pdf")
+            file_text = body.get("file_text", "")
+            subject = body.get("subject", "Architecture 101")
+            processed = orchestrator.quiz.process_uploaded_notes(file_name, file_text, subject)
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps({"status": "PROCESSED", "data": processed}).encode('utf-8'))
+
         elif path == "/api/v1/user/settings":
             name = body.get("name", "Bhavesh Dhidaria")
             focus_window = body.get("focus_window", "09:00 AM - 11:30 AM")
@@ -244,7 +254,7 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
 def run_server():
     server_address = ('0.0.0.0', PORT)
     httpd = socketserver.TCPServer(server_address, AgenticAIHandler)
-    print(f"🤖 Python Agentic AI Server v3.0 running on http://0.0.0.0:{PORT}")
+    print(f"🤖 Python Agentic AI Server v3.5 running on http://0.0.0.0:{PORT}")
     httpd.serve_forever()
 
 if __name__ == "__main__":
