@@ -52,7 +52,7 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
             user = dict(cursor.fetchone())
             cursor.execute("SELECT * FROM subjects;")
             subjects = [dict(r) for r in cursor.fetchall()]
-            cursor.execute("SELECT * FROM tasks;")
+            cursor.execute("SELECT * FROM tasks ORDER BY id DESC;")
             tasks = [dict(r) for r in cursor.fetchall()]
             conn.close()
 

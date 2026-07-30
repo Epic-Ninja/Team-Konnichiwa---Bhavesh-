@@ -866,10 +866,18 @@
                 if (document.getElementById('attendance-alert-text')) document.getElementById('attendance-alert-text').innerHTML = `<strong>Attendance Alert:</strong> ${ai.attendance_alert}`;
                 if (document.getElementById('home-gpa-summary')) document.getElementById('home-gpa-summary').innerText = `${ai.projected_gpa} Projected • ${ai.syllabus_coverage} Coverage`;
 
+                document.getElementById('task-completed-count').innerText = `${data.tasks.filter(t => t.completed).length} / ${data.tasks.length} COMPLETED`;
+
                 document.getElementById('home-tasks-list').innerHTML = data.tasks.map(t => `
                     <div class="flex items-center justify-between p-3.5 bg-surface-container/60 rounded-xl border border-white/5 hover:border-white/10 transition-all">
-                        <span class="font-body-sm text-xs ${t.completed ? 'line-through text-on-surface-variant' : 'text-primary'}">${t.title}</span>
-                        <button onclick="toggleTaskInPython(${t.id})" class="font-label-caps text-[10px] bg-accent-emerald/20 text-accent-emerald px-3 py-1 rounded-full hover:bg-accent-emerald/40 transition-colors font-bold">${t.completed ? 'COMPLETED ✓' : 'MARK DONE'}</button>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-label-caps text-[9px] bg-accent-indigo/20 text-accent-indigo px-2 py-0.5 rounded font-bold">${t.tag || '#SYLLABUS'}</span>
+                                <span class="font-label-caps text-[9px] text-on-surface-variant">${t.due_date || 'TODAY'}</span>
+                            </div>
+                            <span class="font-body-sm text-xs font-semibold ${t.completed ? 'line-through text-on-surface-variant' : 'text-primary'}">${t.title}</span>
+                        </div>
+                        <button onclick="toggleTaskInPython(${t.id})" class="font-label-caps text-[10px] bg-accent-emerald/20 text-accent-emerald px-3 py-1 rounded-full hover:bg-accent-emerald/40 transition-colors font-bold shrink-0 ml-2">${t.completed ? 'COMPLETED ✓' : 'MARK DONE'}</button>
                     </div>
                 `).join('');
 
