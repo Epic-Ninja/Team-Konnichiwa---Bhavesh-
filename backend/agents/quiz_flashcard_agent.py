@@ -187,15 +187,26 @@ class QuizFlashcardAgent:
 
         # 3. Generate To-Do Tasks, Calendar Milestones, and Daily Timetable
         generated_tasks = [
-            {"title": f"Review {concept1} concepts from {file_name}", "tag": "#SYLLABUS", "priority": "High", "due_date": "TODAY", "estimate": "1.5h", "bg_color": "bg-[#e5e2e1]"},
-            {"title": f"Solve practice set for {concept2}", "tag": "#MODULE", "priority": "High", "due_date": "OCT 28", "estimate": "2h", "bg_color": "bg-accent-indigo/15"},
-            {"title": f"Draft summary report for {concept3}", "tag": "#ASSIGNMENT", "priority": "Med", "due_date": "OCT 31", "estimate": "2.5h", "bg_color": "bg-accent-emerald/15"}
+            {"title": f"Study Topic: {concept1} ({subject})", "tag": "#SYLLABUS", "priority": "High", "due_date": "TODAY", "estimate": "1.5h", "bg_color": "bg-[#e5e2e1]"},
+            {"title": f"Solve Module Problem Set: {concept2}", "tag": "#MODULE", "priority": "High", "due_date": "OCT 28", "estimate": "2h", "bg_color": "bg-accent-indigo/15"},
+            {"title": f"Draft Syllabus Revision Outline: {concept3}", "tag": "#ASSIGNMENT", "priority": "Med", "due_date": "OCT 31", "estimate": "2.5h", "bg_color": "bg-accent-emerald/15"}
         ]
 
-        # Save To-Do Tasks into SQLite Database
+        # Save Subject & To-Do Tasks into SQLite Database
+        import time
         try:
             conn = sqlite3.connect(DB_PATH)
             cursor = conn.cursor()
+            
+            # Auto-add subject if not already present
+            cursor.execute("SELECT COUNT(*) FROM subjects WHERE title = ?;", (subject,))
+            if cursor.fetchone()[0] == 0:
+                sub_id = f"s_{int(time.time())}"
+                cursor.execute("""
+                    INSERT INTO subjects (id, title, module, progress, attendance, credits, next_lesson, image_url)
+                    VALUES (?, ?, 'MODULE 01', 0, 92, 4.0, 'Unit Overview & Revision', '');
+                """, (sub_id, subject))
+
             for t in generated_tasks:
                 cursor.execute("""
                     INSERT INTO tasks (title, tag, priority, due_date, completed, estimate, bg_color)
@@ -204,7 +215,7 @@ class QuizFlashcardAgent:
             conn.commit()
             conn.close()
         except Exception as e:
-            print(f"Error inserting generated tasks into SQLite DB: {e}")
+            print(f"Error inserting generated tasks & subject into SQLite DB: {e}")
 
         # Calendar Milestones
         calendar_events = [

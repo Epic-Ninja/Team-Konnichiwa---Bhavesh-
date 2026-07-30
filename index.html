@@ -1459,6 +1459,14 @@
             const textToProcess = syllabusText || `Syllabus topics for ${subjectTitle}: Module 1 Fundamentals, Module 2 Advanced Problem Sets, Midterm Review on Oct 31.`;
 
             try {
+                // 1. Ensure Subject is added to Subjects tab & SQLite DB
+                await fetch(`${API_BASE}/subjects/add`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ title: subjectTitle, module: "MODULE 01 (Syllabus Ingested)", attendance: 92, progress: 0 })
+                });
+
+                // 2. Process Syllabus text (generates topic-specific To-Do tasks, Calendar milestones, Daily Timetable)
                 const resUpload = await fetch(`${API_BASE}/upload/notes`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -1466,6 +1474,7 @@
                 });
                 const resultUpload = await resUpload.json();
 
+                // 3. Process Planner Ingestion
                 const resPlanner = await fetch(`${API_BASE}/planner/ingest`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -1489,7 +1498,7 @@
                     updatePlannerProgressBar();
                 }
 
-                alert(`🎉 Syllabus & Target Goal Analyzed!\n\n1. Target Goal (${targetGpa}) & Intensity set.\n2. AI generated To-Do tasks added to your list.\n3. Calendar Exam & Submission milestones marked.\n4. Daily Time-Blocked timetable generated in Planner!`);
+                alert(`🎉 Syllabus & Target Goal Analyzed!\n\n1. Subject '${subjectTitle}' added to your Subjects tab.\n2. AI generated topic-specific To-Do tasks added to your list.\n3. Calendar Exam & Submission milestones marked.\n4. Daily Time-Blocked timetable generated in Planner!`);
 
                 switchTab('planner');
             } catch(e) {
