@@ -127,3 +127,11 @@ def add_subject(title: str, module: str = "CORE MODULE", progress: int = 50, att
     conn.commit()
     conn.close()
     return {"id": subject_id, "title": title, "module": module, "progress": progress, "attendance": attendance}
+
+def delete_subject(subject_id: str):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM subjects WHERE id = ?;", (subject_id,))
+    conn.commit()
+    conn.close()
+    return True

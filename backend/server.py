@@ -287,6 +287,13 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
             self._set_cors_headers(200)
             self.wfile.write(json.dumps({"status": "SUCCESS", "subject": new_sub}).encode('utf-8'))
 
+        elif path == "/api/v1/subjects/delete":
+            subject_id = body.get("subject_id")
+            from database import delete_subject
+            delete_subject(subject_id)
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps({"status": "DELETED", "subject_id": subject_id}).encode('utf-8'))
+
         elif path == "/api/v1/user/settings":
             name = body.get("name", "Bhavesh Dhidaria")
             focus_window = body.get("focus_window", "09:00 AM - 11:30 AM")
