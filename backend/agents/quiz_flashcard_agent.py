@@ -2,7 +2,10 @@ from typing import Dict, Any, List
 import os
 import re
 import json
+import sqlite3
 from .gemini_service import GeminiAPIService
+
+DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "studypilot.db")
 
 class QuizFlashcardAgent:
     def __init__(self, name: str = "QuizFlashcardAgent"):
@@ -125,85 +128,12 @@ class QuizFlashcardAgent:
     def process_uploaded_notes(self, file_name: str, file_text: str, subject: str = "General") -> Dict[str, Any]:
         text_clean = file_text.strip()
         
-        # 1. Try Gemini API generation first if configured
-        if self.gemini.is_configured() and len(text_clean) > 20:
-            prompt = (
-                f"You are an expert professor analyzing the student document '{file_name}' for course '{subject}'.\n"
-                f"Extract 3 distinct key concepts/facts from this document text:\n"
-                f"\"\"\"\n{text_clean[:2500]}\n\"\"\"\n\n"
-                f"Return ONLY raw JSON with keys: 'summary' (string), 'q1_question', 'q1_correct', 'q1_wrong1', 'q1_wrong2', 'q1_explain', "
-                f"'q2_question', 'q2_correct', 'q2_wrong1', 'q2_wrong2', 'q2_explain', "
-                f"'fc1_concept', 'fc1_def', 'fc1_takeaway', 'fc2_concept', 'fc2_def', 'fc2_takeaway', 'fc3_concept', 'fc3_def', 'fc3_takeaway'."
-            )
-            raw = self.gemini.generate_content(prompt)
-            if raw:
-                try:
-                    js = raw.strip()
-                    if "```json" in js: js = js.split("```json")[1].split("```")[0].strip()
-                    elif "```" in js: js = js.split("```")[1].split("```")[0].strip()
-                    data = json.loads(js)
-                    
-                    summary = f"Processed '{file_name}':\n• {data.get('summary', 'Document key concepts extracted.')}"
-                    quiz = [
-                        {
-                            "id": 1,
-                            "question": data.get("q1_question", f"What key principle is stated in {file_name}?"),
-                            "options": [f"A) {data.get('q1_correct', 'Core principle')}", f"B) {data.get('q1_wrong1', 'Incorrect option')}", f"C) {data.get('q1_wrong2', 'Alternative option')}"],
-                            "correct_index": 0,
-                            "explanation": data.get("q1_explain", f"Extracted directly from {file_name}.")
-                        },
-                        {
-                            "id": 2,
-                            "question": data.get("q2_question", f"Which topic is explored in {file_name}?"),
-                            "options": [f"A) {data.get('q2_correct', 'Secondary concept')}", f"B) {data.get('q2_wrong1', 'Irrelevant theory')}", f"C) {data.get('q2_wrong2', 'Outdated method')}"],
-                            "correct_index": 0,
-                            "explanation": data.get("q2_explain", f"Extracted directly from {file_name}.")
-                        }
-                    ]
-                    flashcards = [
-                        {
-                            "id": 1, 
-                            "concept": data.get("fc1_concept", "Core Concept 1"), 
-                            "definition": data.get("fc1_def", "Definition 1"), 
-                            "takeaway": data.get("fc1_takeaway", "Key exam takeaway from uploaded PDF."),
-                            "memory_score": 95
-                        },
-                        {
-                            "id": 2, 
-                            "concept": data.get("fc2_concept", "Core Concept 2"), 
-                            "definition": data.get("fc2_def", "Definition 2"), 
-                            "takeaway": data.get("fc2_takeaway", "Practical application context from uploaded PDF."),
-                            "memory_score": 90
-                        },
-                        {
-                            "id": 3, 
-                            "concept": data.get("fc3_concept", "Core Concept 3"), 
-                            "definition": data.get("fc3_def", "Definition 3"), 
-                            "takeaway": data.get("fc3_takeaway", "Core analytical framework."),
-                            "memory_score": 85
-                        }
-                    ]
-                    
-                    result_payload = {
-                        "file_name": file_name,
-                        "subject": subject,
-                        "summary": summary,
-                        "quiz": quiz,
-                        "flashcards": flashcards
-                    }
-                    self.uploaded_decks[subject] = result_payload
-                    return result_payload
-                except Exception as e:
-                    print(f"Gemini JSON Parse fallback triggered: {e}")
-
-        # 2. Dynamic Text Sentence Extractor (Guaranteed PDF-Grounded Result)
-        raw_sentences = [s.strip() for s in re.split(r'[\n\.\?\!]+', text_clean) if len(s.strip()) > 20 and not s.strip().startswith('[Page')]
-        
+        raw_sentences = [s.strip() for s in re.split(r'[\n\.\?\!]+', text_clean) if len(s.strip()) > 15 and not s.strip().startswith('[Page')]
         if len(raw_sentences) < 3:
             raw_sentences = [
-                f"Document {file_name} discusses core theoretical fundamentals of {subject}.",
-                f"Key methodology involves analytical evaluation of {subject} principles.",
-                f"Practical applications include structured framework implementation."
+                f"Core theoretical fundamentals of {subject} in document {file_name}.",
+                f"Analytical evaluation of key {subject} syllabus principles.",
+                f"Practical project implementation framework."
             ]
 
         s1 = raw_sentences[0]
@@ -216,7 +146,7 @@ class QuizFlashcardAgent:
 
         summary = (
             f"PDF Document Analysis ('{file_name}'):\n"
-            f"• Core Principle: {s1[:120]}\n"
+            f"• Core Concept: {s1[:120]}\n"
             f"• Key Definition: {s2[:120]}\n"
             f"• Practical Focus: {s3[:120]}"
         )
@@ -225,35 +155,16 @@ class QuizFlashcardAgent:
             {
                 "id": 1,
                 "question": f"Based on '{file_name}': What statement accurately describes {concept1}?",
-                "options": [
-                    f"A) {s1[:90]}",
-                    f"B) {s2[:90]} (Secondary finding)",
-                    "C) Discarded historical hypothesis"
-                ],
+                "options": [f"A) {s1[:90]}", f"B) {s2[:90]}", "C) Discarded historical hypothesis"],
                 "correct_index": 0,
-                "explanation": f"Directly extracted from '{file_name}': \"{s1[:120]}\""
+                "explanation": f"Extracted directly from '{file_name}': \"{s1[:120]}\""
             },
             {
                 "id": 2,
                 "question": f"According to '{file_name}': Which mechanism explains {concept2}?",
-                "options": [
-                    f"A) {s2[:90]}",
-                    f"B) Alternative theory unrelated to {subject}",
-                    "C) Variable calculation error"
-                ],
+                "options": [f"A) {s2[:90]}", f"B) Alternative theory unrelated to {subject}", "C) Variable calculation error"],
                 "correct_index": 0,
-                "explanation": f"Directly extracted from '{file_name}': \"{s2[:120]}\""
-            },
-            {
-                "id": 3,
-                "question": f"In '{file_name}': What is highlighted regarding {concept3}?",
-                "options": [
-                    f"A) {s3[:90]}",
-                    "B) Outdated non-functional framework",
-                    "C) Disregarded lab reading"
-                ],
-                "correct_index": 0,
-                "explanation": f"Directly extracted from '{file_name}': \"{s3[:120]}\""
+                "explanation": f"Extracted directly from '{file_name}': \"{s2[:120]}\""
             }
         ]
 
@@ -262,7 +173,7 @@ class QuizFlashcardAgent:
                 "id": 1,
                 "concept": concept1,
                 "definition": s1,
-                "takeaway": f"Primary exam takeaway: {s1[:140]}",
+                "takeaway": f"Primary takeaway: {s1[:140]}",
                 "memory_score": 95
             },
             {
@@ -271,13 +182,64 @@ class QuizFlashcardAgent:
                 "definition": s2,
                 "takeaway": f"Practical application: {s2[:140]}",
                 "memory_score": 88
+            }
+        ]
+
+        # 3. Generate To-Do Tasks, Calendar Milestones, and Daily Timetable
+        generated_tasks = [
+            {"title": f"Review {concept1} concepts from {file_name}", "tag": "#SYLLABUS", "priority": "High", "due_date": "TODAY", "estimate": "1.5h", "bg_color": "bg-[#e5e2e1]"},
+            {"title": f"Solve practice set for {concept2}", "tag": "#MODULE", "priority": "High", "due_date": "OCT 28", "estimate": "2h", "bg_color": "bg-accent-indigo/15"},
+            {"title": f"Draft summary report for {concept3}", "tag": "#ASSIGNMENT", "priority": "Med", "due_date": "OCT 31", "estimate": "2.5h", "bg_color": "bg-accent-emerald/15"}
+        ]
+
+        # Save To-Do Tasks into SQLite Database
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            for t in generated_tasks:
+                cursor.execute("""
+                    INSERT INTO tasks (title, tag, priority, due_date, completed, estimate, bg_color)
+                    VALUES (?, ?, ?, ?, 0, ?, ?);
+                """, (t["title"], t["tag"], t["priority"], t["due_date"], t["estimate"], t["bg_color"]))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(f"Error inserting generated tasks into SQLite DB: {e}")
+
+        # Calendar Milestones
+        calendar_events = [
+            {"day": 31, "title": f"{subject} Midterm Studio Review", "type": "EXAM", "time": "09:00 AM - 11:30 AM", "details": f"Midterm review on {concept1} and {concept2} extracted from {file_name}."},
+            {"day": 13, "title": f"{subject} Module Submission", "type": "SUBMISSION", "time": "02:00 PM - 04:00 PM", "details": f"Full portfolio draft submission for {subject} based on {file_name}."}
+        ]
+
+        # Daily Planner Timetable
+        daily_planner = [
+            {
+                "id": 401,
+                "time_slot": "09:00 AM - 11:30 AM (PEAK FOCUS)",
+                "activity": f"Deep Focus: {concept1} ({subject})",
+                "subject": subject,
+                "reasoning": f"Morning peak focus window allocated for high-weight syllabus topic extracted from {file_name}.",
+                "status": "PROPOSED",
+                "reminder": "🔔 15 mins before (08:45 AM)"
             },
             {
-                "id": 3,
-                "concept": concept3,
-                "definition": s3,
-                "takeaway": f"Analytical framework: {s3[:140]}",
-                "memory_score": 82
+                "id": 402,
+                "time_slot": "02:00 PM - 04:00 PM",
+                "activity": f"Module Practice Sprint: {concept2}",
+                "subject": subject,
+                "reasoning": f"Targeted problem set sprint for uploaded document {file_name}.",
+                "status": "PROPOSED",
+                "reminder": "🔔 15 mins before (01:45 PM)"
+            },
+            {
+                "id": 403,
+                "time_slot": "05:00 PM - 06:00 PM",
+                "activity": f"Active Recall & Flashcards: {concept3}",
+                "subject": subject,
+                "reasoning": "Spaced repetition review to maximize exam retention.",
+                "status": "PROPOSED",
+                "reminder": "🔔 10 mins before (04:50 PM)"
             }
         ]
 
@@ -285,9 +247,12 @@ class QuizFlashcardAgent:
             "file_name": file_name,
             "subject": subject,
             "summary": summary,
-            "quiz": result_payload if False else quiz,
-            "flashcards": flashcards
+            "quiz": quiz,
+            "flashcards": flashcards,
+            "tasks": generated_tasks,
+            "calendar_events": calendar_events,
+            "daily_planner": daily_planner
         }
-        
+
         self.uploaded_decks[subject] = result_payload
         return result_payload

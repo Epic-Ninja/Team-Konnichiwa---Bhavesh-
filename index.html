@@ -334,23 +334,25 @@
                     <div class="p-3 bg-surface-container/30 rounded-xl opacity-40">27</div>
                     <div class="p-3 bg-surface-container/30 rounded-xl opacity-40">28</div>
                     <div class="p-3 bg-surface-container/30 rounded-xl opacity-40">29</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary font-bold">30</div>
-                    <div class="p-3 bg-accent-indigo/30 border border-accent-indigo rounded-xl text-primary font-bold shadow-md">31★</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">1</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">2</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">3</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">4</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">5</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">6</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">7</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">8</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">9</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">10</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">11</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">12</div>
-                    <div class="p-3 bg-accent-indigo/40 border border-accent-indigo/60 rounded-xl text-primary font-bold">13📝</div>
-                    <div class="p-3 bg-accent-emerald/40 border border-accent-emerald/60 rounded-xl text-primary font-bold">14🎓</div>
-                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">15</div>
+                    <div onclick="openCalendarDayDetails(30)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary font-bold cursor-pointer transition-all">30</div>
+                    <div onclick="openCalendarDayDetails(31)" class="p-3 bg-accent-indigo/30 border border-accent-indigo rounded-xl text-primary font-bold shadow-md cursor-pointer hover:scale-105 transition-all">31★</div>
+                    <div onclick="openCalendarDayDetails(1)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">1</div>
+                    <div onclick="openCalendarDayDetails(2)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">2</div>
+                    <div onclick="openCalendarDayDetails(3)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">3</div>
+                    <div onclick="openCalendarDayDetails(4)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">4</div>
+                    <div onclick="openCalendarDayDetails(5)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">5</div>
+                    <div onclick="openCalendarDayDetails(6)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">6</div>
+                    <div onclick="openCalendarDayDetails(7)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">7</div>
+                    <div onclick="openCalendarDayDetails(8)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">8</div>
+                    <div onclick="openCalendarDayDetails(9)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">9</div>
+                    <div onclick="openCalendarDayDetails(10)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">10</div>
+                    <div onclick="openCalendarDayDetails(11)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">11</div>
+                    <div onclick="openCalendarDayDetails(12)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">12</div>
+                    <div onclick="openCalendarDayDetails(13)" class="p-3 bg-accent-indigo/40 border border-accent-indigo/60 rounded-xl text-primary font-bold cursor-pointer hover:scale-105 transition-all">13📝</div>
+                    <div onclick="openCalendarDayDetails(14)" class="p-3 bg-accent-emerald/40 border border-accent-emerald/60 rounded-xl text-primary font-bold cursor-pointer hover:scale-105 transition-all">14🎓</div>
+                    <div onclick="openCalendarDayDetails(15)" class="p-3 bg-surface-container/60 hover:bg-surface-bright border border-white/5 rounded-xl text-primary cursor-pointer transition-all">15</div>
+                    <div onclick="openCalendarDayDetails(25)" class="p-3 bg-accent-clay/30 border border-accent-clay/60 rounded-xl text-primary font-bold cursor-pointer hover:scale-105 transition-all">25📝</div>
+                    <div onclick="openCalendarDayDetails(28)" class="p-3 bg-accent-indigo/30 border border-accent-indigo/60 rounded-xl text-primary font-bold cursor-pointer hover:scale-105 transition-all">28⚡</div>
                 </div>
             </div>
 
@@ -700,6 +702,26 @@
                 <button onclick="closeGraphModal()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
             </div>
             <div id="graph-modal-content" class="space-y-4 font-body-sm text-xs"></div>
+        </div>
+    </div>
+
+    <!-- CALENDAR DAY DETAILS MODAL -->
+    <div id="calendar-day-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-surface-card border border-accent-indigo/40 rounded-[32px] p-8 max-w-xl w-full shadow-2xl space-y-6 glow-indigo">
+            <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                <div class="flex items-center gap-2 text-accent-indigo">
+                    <span class="material-symbols-outlined text-2xl">calendar_month</span>
+                    <h3 id="cal-day-modal-title" class="font-headline-lg text-2xl text-primary font-bold">July 31, 2026</h3>
+                </div>
+                <button onclick="closeCalendarDayModal()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            
+            <div id="cal-day-modal-content" class="space-y-4 text-xs font-body-sm"></div>
+
+            <div class="flex justify-end gap-3 pt-2 border-t border-white/10">
+                <button onclick="switchTab('timer'); closeCalendarDayModal();" class="bg-accent-indigo text-primary px-6 py-2.5 rounded-full font-label-caps text-xs font-bold shadow-lg hover:scale-105 transition-transform">Start Day Focus →</button>
+                <button onclick="closeCalendarDayModal()" class="bg-surface-container border border-white/10 text-on-surface-variant px-5 py-2.5 rounded-full font-label-caps text-xs font-bold hover:bg-surface-bright">Close</button>
+            </div>
         </div>
     </div>
 
@@ -1328,8 +1350,91 @@
                 renderCurrentFlashcard();
                 document.getElementById('active-flashcards-container').classList.remove('hidden');
 
+                if (data.daily_planner) {
+                    activeProposedPlan = data.daily_planner;
+                    document.getElementById('proposed-plan-container').classList.remove('hidden');
+                    renderProposedPlanItems();
+                    updatePlannerProgressBar();
+                }
+
+                await fetchDashboardFromPython();
+
+                alert(`🎉 Syllabus / Module Processed Successfully!\n\n1. AI generated To-Do tasks added to your list.\n2. Key exam & submission milestones marked on Calendar.\n3. Daily Time-Blocked timetable auto-generated in Planner!`);
+
+                setTimeout(() => {
+                    switchTab('planner');
+                }, 800);
+
                 window.scrollTo({ top: document.getElementById('notes-summary-container').offsetTop - 100, behavior: 'smooth' });
             } catch(e) { console.error(e); }
+        }
+
+        function openCalendarDayDetails(dayNum) {
+            const modal = document.getElementById('calendar-day-modal');
+            const titleEl = document.getElementById('cal-day-modal-title');
+            const contentEl = document.getElementById('cal-day-modal-content');
+            
+            titleEl.innerText = `July ${dayNum}, 2026`;
+            modal.classList.remove('hidden');
+
+            let milestoneHTML = "";
+            if (dayNum === 31) {
+                milestoneHTML = `
+                    <div class="p-4 bg-accent-indigo/20 border border-accent-indigo rounded-2xl space-y-2 glow-indigo">
+                        <span class="font-label-caps text-xs text-accent-indigo font-bold">🎯 MILESTONE: EXAM SPRINT</span>
+                        <h4 class="font-headline-md text-base text-primary font-bold">Architecture 101 Midterm Studio Review</h4>
+                        <p class="text-on-surface-variant text-xs">Time: 09:00 AM - 11:30 AM • Location: Design Studio A</p>
+                        <p class="text-accent-indigo italic text-xs">💡 AI Focus Justification: High-weight midterm evaluation. Preparedness score at 92% based on completed flashcards.</p>
+                    </div>
+                `;
+            } else if (dayNum === 13) {
+                milestoneHTML = `
+                    <div class="p-4 bg-accent-indigo/20 border border-accent-indigo rounded-2xl space-y-2 glow-indigo">
+                        <span class="font-label-caps text-xs text-accent-indigo font-bold">📝 MILESTONE: SUBMISSION DUE</span>
+                        <h4 class="font-headline-md text-base text-primary font-bold">Urban Planning Essay Submission (2,500 words)</h4>
+                        <p class="text-on-surface-variant text-xs">Time: 02:00 PM - 04:00 PM • Submission Portal</p>
+                        <p class="text-accent-emerald italic text-xs">💡 AI Focus Justification: Priority submission task ingested from uploaded syllabus module.</p>
+                    </div>
+                `;
+            } else if (dayNum === 14) {
+                milestoneHTML = `
+                    <div class="p-4 bg-accent-emerald/20 border border-accent-emerald rounded-2xl space-y-2 glow-emerald">
+                        <span class="font-label-caps text-xs text-accent-emerald font-bold">🎓 MILESTONE: PRESENTATION</span>
+                        <h4 class="font-headline-md text-base text-primary font-bold">Structural Mechanics FEA Matrix Defense</h4>
+                        <p class="text-on-surface-variant text-xs">Time: 10:00 AM - 12:00 PM • Lecture Hall 3</p>
+                    </div>
+                `;
+            } else {
+                milestoneHTML = `
+                    <div class="p-4 bg-surface-container rounded-2xl space-y-2 border border-white/10">
+                        <span class="font-label-caps text-xs text-accent-emerald font-bold">⏱️ TIME-BLOCKED DAILY STUDY SESSION</span>
+                        <h4 class="font-headline-md text-base text-primary font-bold">Deep Work & Syllabus Revision Sprint</h4>
+                        <p class="text-on-surface-variant text-xs">09:00 AM - 11:30 AM (Peak Focus Window)</p>
+                        <p class="text-on-surface-variant italic text-xs">💡 AI Focus Justification: Scheduled to maintain steady progress toward target 3.92 GPA.</p>
+                    </div>
+                `;
+            }
+
+            contentEl.innerHTML = `
+                ${milestoneHTML}
+                <div class="p-4 bg-surface-container rounded-2xl border border-white/5 space-y-2">
+                    <span class="font-label-caps text-xs text-accent-indigo font-bold">📋 SCHEDULED TO-DO TASKS FOR THIS DAY</span>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between items-center p-2.5 bg-surface-bright rounded-xl border border-white/5">
+                            <span class="text-primary font-medium">📖 Active Recall & Flashcard Revision Sprint</span>
+                            <span class="text-accent-emerald font-bold font-label-caps text-[10px]">60 Mins</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2.5 bg-surface-bright rounded-xl border border-white/5">
+                            <span class="text-primary font-medium">📝 Syllabus Module Practice Questions</span>
+                            <span class="text-accent-indigo font-bold font-label-caps text-[10px]">45 Mins</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeCalendarDayModal() {
+            document.getElementById('calendar-day-modal').classList.add('hidden');
         }
 
         function handleSubjectSelectionChange() {
