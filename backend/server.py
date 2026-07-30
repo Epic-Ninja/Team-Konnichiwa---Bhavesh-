@@ -9,13 +9,14 @@ from urllib.parse import urlparse, parse_qs
 sys.path.append(os.path.dirname(__file__))
 
 from database import init_db, get_db
-from agents.orchestrator import AgenticOrchestrator
+from agents.orchestrator import AgenticOrchestrator, ConversationState
 
 PORT = 8000
 
-# Initialize DB and Agentic Orchestrator
+# Initialize DB, Agentic Orchestrator and Global Chat Conversation
 init_db()
 orchestrator = AgenticOrchestrator()
+global_chat_conversation = ConversationState()
 
 class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
 
@@ -40,7 +41,7 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
             res = {
                 "status": "ONLINE",
                 "system": "StudyPilot AI Agentic Backend Engine",
-                "engine": "Python Multi-Agent Orchestrator v3.5 (Subject-Wise AI Tools + Notes Processing)"
+                "engine": "Python Multi-Agent Orchestrator v5.0 (Timetable + Accept/Edit/Reject Plan Engine)"
             }
             self.wfile.write(json.dumps(res).encode('utf-8'))
 
@@ -168,7 +169,47 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length).decode('utf-8') if content_length > 0 else "{}"
         body = json.loads(post_data) if post_data else {}
 
-        if path == "/api/v1/planner/replan":
+        if path == "/api/v1/planner/ingest":
+            timetable = body.get("timetable", [])
+            assignments = body.get("assignments", [])
+            goals = body.get("goals", {"target_gpa": "3.92 GPA", "intensity": "Balanced"})
+            plan = orchestrator.planner.ingest_timetable_and_goals(timetable, assignments, goals)
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps({"status": "PROPOSED", "plan": plan}).encode('utf-8'))
+
+        elif path == "/api/v1/planner/action":
+            action = body.get("action", "ACCEPT") # ACCEPT, EDIT, REJECT
+            plan_items = body.get("plan_items", [])
+            
+            if action == "ACCEPT":
+                conn = get_db()
+                cursor = conn.cursor()
+                for item in plan_items:
+                    cursor.execute("""
+                        INSERT INTO tasks (title, tag, priority, due_date, completed, estimate, bg_color)
+                        VALUES (?, ?, ?, ?, 0, ?, 'bg-accent-emerald/20');
+                    """, (item.get("activity"), f"#{item.get('subject', 'STUDY')[:8]}", "High", "TODAY", "1.5h"))
+                conn.commit()
+                conn.close()
+                self._set_cors_headers(200)
+                self.wfile.write(json.dumps({
+                    "status": "ACCEPTED",
+                    "message": f"Plan Accepted! {len(plan_items)} study blocks & reminders synced to your schedule & SQLite DB."
+                }).encode('utf-8'))
+            elif action == "REJECT":
+                self._set_cors_headers(200)
+                self.wfile.write(json.dumps({
+                    "status": "REJECTED",
+                    "message": "Proposed plan rejected. Baseline schedule restored."
+                }).encode('utf-8'))
+            else:
+                self._set_cors_headers(200)
+                self.wfile.write(json.dumps({
+                    "status": "EDITED",
+                    "message": "Plan updated with custom preferences."
+                }).encode('utf-8'))
+
+        elif path == "/api/v1/planner/replan":
             trigger_text = body.get("trigger_text", "")
             res = orchestrator.process_natural_language_trigger(trigger_text)
             
@@ -208,7 +249,23 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
 
         elif path == "/api/v1/chat":
             msg = body.get("message", "")
-            ai_response = orchestrator.process_chat_query(msg)
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users LIMIT 1;")
+            user_row = cursor.fetchone()
+            user_data = dict(user_row) if user_row else None
+            cursor.execute("SELECT * FROM subjects;")
+            subjects_data = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+
+            streak_val = user_data.get("streak", 21) if user_data else 21
+            ai_response = orchestrator.process_chat_query(
+                query_text=msg,
+                user_data=user_data,
+                subjects=subjects_data,
+                streak=streak_val,
+                conversation=global_chat_conversation
+            )
             self._set_cors_headers(200)
             self.wfile.write(json.dumps({"response": ai_response}).encode('utf-8'))
 
@@ -254,7 +311,7 @@ class AgenticAIHandler(http.server.BaseHTTPRequestHandler):
 def run_server():
     server_address = ('0.0.0.0', PORT)
     httpd = socketserver.TCPServer(server_address, AgenticAIHandler)
-    print(f"🤖 Python Agentic AI Server v3.5 running on http://0.0.0.0:{PORT}")
+    print(f"🤖 Python Agentic AI Server v5.0 running on http://0.0.0.0:{PORT}")
     httpd.serve_forever()
 
 if __name__ == "__main__":

@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>StudyPilot AI | Student Agentic Operating System</title>
+    <!-- Tailwind CSS with Forms & Container Queries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Literata, Hanken Grotesk, JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&family=Hanken+Grotesk:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet"/>
+    <!-- Material Symbols Outlined -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <!-- PDF.js library for client-side PDF text extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>if(window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#fffff1",
+                        "surface-container-lowest": "#0e0e0e",
+                        "primary-container": "#e2e2d5",
+                        "surface": "#131313",
+                        "accent-emerald": "#5E8C7E",
+                        "accent-indigo": "#6366F1",
+                        "on-surface-variant": "#c8c7be",
+                        "accent-olive": "#848D78",
+                        "surface-card": "#1F1F23",
+                        "on-surface": "#e5e2e1",
+                        "background": "#131313",
+                        "accent-clay": "#D97757"
+                    },
+                    fontFamily: {
+                        "body-lg": ["Hanken Grotesk", "sans-serif"],
+                        "headline-md": ["Literata", "serif"],
+                        "display-lg": ["Literata", "serif"],
+                        "label-caps": ["JetBrains Mono", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+        body { background-color: #131313; color: #e5e2e1; font-family: 'Hanken Grotesk', sans-serif; overflow-x: hidden; min-height: 100vh; }
+        .glass-panel { background: rgba(31, 31, 35, 0.5); backdrop-filter: blur(16px); border: 0.5px solid rgba(255, 255, 255, 0.08); }
+        .paper-card { background: #e5e2e1; color: #131313; box-shadow: 0 4px 20px rgba(0,0,0,0.2); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease; }
+        .paper-card:hover { transform: translateY(-4px) rotate(0.5deg); box-shadow: 0 12px 30px rgba(0,0,0,0.35); }
+        .fade-in-section { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        button, a, select, input { transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+        .glow-indigo { box-shadow: 0 0 25px rgba(99, 102, 241, 0.15); }
+        .glow-emerald { box-shadow: 0 0 25px rgba(94, 140, 126, 0.15); }
+        .glow-clay { box-shadow: 0 0 25px rgba(217, 119, 87, 0.15); }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-lg antialiased relative min-h-screen pb-32">
+
+    <!-- Top Navigation Header -->
+    <header class="w-full top-0 left-0 fixed z-40 bg-surface/85 backdrop-blur-xl border-b border-white/5 flex justify-between items-center px-6 py-3.5 shadow-xl">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleSettingsModal()" class="text-primary hover:opacity-80 flex items-center justify-center p-2 rounded-full hover:bg-white/5" title="Menu & Settings">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <div class="flex flex-col">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-accent-indigo text-xl animate-pulse">auto_awesome</span>
+                    <h1 id="screen-title" class="font-headline-md text-xl text-primary tracking-tight font-semibold">StudyPilot OS</h1>
+                </div>
+                <span id="header-user-sub" class="font-label-caps text-[9px] text-on-surface-variant font-medium">Bhavesh Dhidaria • B.Arch 6th Sem</span>
+            </div>
+        </div>
+
+        <!-- Global RAG Search Bar -->
+        <div class="hidden lg:flex items-center bg-surface-container/70 border border-white/10 rounded-full px-4 py-2 w-80 text-xs focus-within:border-accent-indigo/80 focus-within:ring-2 focus-within:ring-accent-indigo/20 transition-all shadow-inner">
+            <span class="material-symbols-outlined text-on-surface-variant text-base mr-2">search</span>
+            <input id="global-search-input" type="text" placeholder="Search syllabus, notes, documents..." onkeydown="if(event.key==='Enter') executeRAGSearch()" class="bg-transparent text-primary placeholder:text-on-surface-variant/60 focus:outline-none w-full font-body-sm"/>
+        </div>
+
+        <!-- Live Engine Status & XP Badge -->
+        <div class="flex items-center gap-3">
+            <div class="hidden md:flex items-center gap-2 bg-accent-emerald/10 border border-accent-emerald/30 px-3.5 py-1.5 rounded-full text-xs font-label-caps text-accent-emerald shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-accent-emerald animate-ping"></span>
+                <span class="font-bold">Python API (Port 8000)</span>
+            </div>
+            <div class="flex items-center gap-1.5 bg-accent-olive/10 border border-accent-olive/30 px-3.5 py-1.5 rounded-full text-xs font-label-caps text-accent-olive shadow-sm">
+                <span>⭐</span>
+                <span id="header-xp-val" class="font-bold">1,420 XP</span>
+            </div>
+            <button onclick="openUploadWizard()" class="hidden md:flex items-center gap-2 bg-primary-container text-on-primary-container px-4 py-1.5 rounded-full font-label-caps text-[10px] tracking-wider font-semibold hover:scale-105 transition-all shadow-md">
+                <span class="material-symbols-outlined text-[16px]">upload_file</span>
+                <span>Upload Syllabus</span>
+            </button>
+            <div onclick="toggleSettingsModal()" class="w-9 h-9 rounded-full bg-surface-container overflow-hidden border border-white/20 hover:opacity-80 transition-opacity cursor-pointer shadow-md">
+                <img id="user-avatar-img" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCABaG220bFjcFBykFHK9SRhLOV8HuN-52naMH7cNztCdzLLhqBEKRCYxBA19YUJwm9TKIIYWYjlQ58q4RwOphq3Ch5lwyayv2cfSvim3jwHRe_FOfLiv9TcY2k9VGKCKbC2ik45mwv1DL_YfPnXUVtGNyLULx0O9Rf4208pzAe9D0eKumTQCBULlh1_6BIyj9w7nio73EdbzjPgXw4QOBO49lHHzAgNdoD_LNVfuWRJkS-xvLS1S3NsQ" alt="User Avatar"/>
+            </div>
+        </div>
+    </header>
+
+    <!-- App Views Container -->
+    <div id="views-container">
+
+        <!-- VIEW 1: HOME DASHBOARD -->
+        <section id="view-home" class="view-panel max-w-6xl mx-auto px-6 pt-28 pb-32 fade-in-section">
+            
+            <!-- AI Daily Briefing Banner -->
+            <div class="mb-8 p-6 bg-gradient-to-r from-surface-card via-[#1c1b1b] to-surface-card border border-accent-indigo/40 rounded-3xl shadow-2xl relative overflow-hidden glow-indigo">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 text-accent-indigo">
+                            <span class="material-symbols-outlined text-lg">auto_awesome</span>
+                            <span class="font-label-caps text-xs tracking-wider font-bold">PYTHON AGENTIC DAILY BRIEFING</span>
+                        </div>
+                        <p id="ai-daily-briefing-text" class="font-body-lg text-primary text-sm leading-relaxed max-w-3xl">
+                            Fetching daily briefing from Python Agent Orchestrator...
+                        </p>
+                    </div>
+                    <button onclick="triggerQuickAction('Reschedule my week')" class="bg-accent-indigo text-primary px-5 py-2.5 rounded-full font-label-caps text-xs font-bold hover:scale-105 transition-transform shrink-0 shadow-lg">
+                        Optimize Week →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Action Re-planner Shortcuts -->
+            <div class="mb-8 flex flex-wrap gap-2 items-center justify-between">
+                <span class="font-label-caps text-xs text-on-surface-variant font-bold">AI RE-PLANNER SHORTCUTS:</span>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="triggerQuickAction('I only have 2 hours')" class="bg-surface-container hover:bg-surface-bright border border-white/10 text-on-surface-variant hover:text-primary px-4 py-1.5 rounded-full font-label-caps text-[10px] tracking-wider shadow-sm">⚡ "I only have 2 hours"</button>
+                    <button onclick="triggerQuickAction('My exam moved')" class="bg-surface-container hover:bg-surface-bright border border-white/10 text-on-surface-variant hover:text-primary px-4 py-1.5 rounded-full font-label-caps text-[10px] tracking-wider shadow-sm">⚡ "My exam moved"</button>
+                    <button onclick="triggerQuickAction('I am sick today')" class="bg-surface-container hover:bg-surface-bright border border-white/10 text-on-surface-variant hover:text-primary px-4 py-1.5 rounded-full font-label-caps text-[10px] tracking-wider shadow-sm">⚡ "I am sick today"</button>
+                    <button onclick="triggerQuickAction('Generate weekend plan')" class="bg-surface-container hover:bg-surface-bright border border-white/10 text-on-surface-variant hover:text-primary px-4 py-1.5 rounded-full font-label-caps text-[10px] tracking-wider shadow-sm">⚡ "Generate weekend plan"</button>
+                </div>
+            </div>
+
+            <!-- Feature Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- 1. Attendance Calculator -->
+                <div onclick="openBunkAllowanceModal()" class="bg-surface-card p-5 rounded-[24px] border border-accent-clay/40 cursor-pointer hover:border-accent-clay hover:scale-[1.02] transition-all space-y-2 shadow-xl glow-clay">
+                    <div class="flex justify-between items-center text-accent-clay">
+                        <span class="font-label-caps text-[10px] font-bold">ATTENDANCE CALCULATOR</span>
+                        <span class="material-symbols-outlined text-lg">warning</span>
+                    </div>
+                    <h4 class="font-headline-md text-base text-primary font-medium">Bunk Allowance</h4>
+                    <p id="home-bunk-summary" class="font-body-sm text-xs text-on-surface-variant">Urban Planning at 74% (Safe Bunks: 0)</p>
+                    <span class="font-label-caps text-[9px] text-accent-clay block font-bold">CALCULATE BUNKS →</span>
+                </div>
+
+                <!-- 2. AI GPA Predictor -->
+                <div onclick="openGpaModal()" class="bg-surface-card p-5 rounded-[24px] border border-accent-indigo/40 cursor-pointer hover:border-accent-indigo hover:scale-[1.02] transition-all space-y-2 shadow-xl glow-indigo">
+                    <div class="flex justify-between items-center text-accent-indigo">
+                        <span class="font-label-caps text-[10px] font-bold">EXAM COACH AGENT</span>
+                        <span class="material-symbols-outlined text-lg">insights</span>
+                    </div>
+                    <h4 class="font-headline-md text-base text-primary font-medium">Projected CGPA</h4>
+                    <p id="home-gpa-summary" class="font-body-sm text-xs text-on-surface-variant">3.92 Projected • 94% Coverage</p>
+                    <span class="font-label-caps text-[9px] text-accent-indigo block font-bold">EXAM COACH DETAILS →</span>
+                </div>
+
+                <!-- 3. Knowledge Graph -->
+                <div onclick="openGraphModal()" class="bg-surface-card p-5 rounded-[24px] border border-accent-emerald/40 cursor-pointer hover:border-accent-emerald hover:scale-[1.02] transition-all space-y-2 shadow-xl glow-emerald">
+                    <div class="flex justify-between items-center text-accent-emerald">
+                        <span class="font-label-caps text-[10px] font-bold">KNOWLEDGE GRAPH</span>
+                        <span class="material-symbols-outlined text-lg">account_tree</span>
+                    </div>
+                    <h4 class="font-headline-md text-base text-primary font-medium">Prerequisites</h4>
+                    <p class="font-body-sm text-xs text-on-surface-variant">Spatial Theory ➔ Architecture 101</p>
+                    <span class="font-label-caps text-[9px] text-accent-emerald block font-bold">VIEW GRAPH →</span>
+                </div>
+
+                <!-- 4. Focus Pulse -->
+                <div onclick="switchTab('rhythm')" class="bg-surface-card p-5 rounded-[24px] border border-accent-olive/40 cursor-pointer hover:border-accent-olive hover:scale-[1.02] transition-all space-y-2 shadow-xl">
+                    <div class="flex justify-between items-center text-accent-olive">
+                        <span class="font-label-caps text-[10px] font-bold">WELLNESS ENGINE</span>
+                        <span class="material-symbols-outlined text-lg">event_note</span>
+                    </div>
+                    <h4 class="font-headline-md text-base text-primary font-medium">Focus Pulse</h4>
+                    <p class="font-body-sm text-xs text-on-surface-variant">Score: 84 Optimal • Burnout: 12%</p>
+                    <span class="font-label-caps text-[9px] text-accent-olive block font-bold">VIEW RHYTHM →</span>
+                </div>
+            </div>
+
+            <!-- Priority Tasks -->
+            <div class="bg-surface-card rounded-[24px] p-6 border border-white/10 shadow-xl space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="font-label-caps text-accent-olive font-bold">TODAY'S PRIORITY TASKS</span>
+                    <span id="task-completed-count" class="font-label-caps text-xs text-on-surface-variant">0 COMPLETED</span>
+                </div>
+                <div id="home-tasks-list" class="space-y-3"></div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: AI STRATEGY MAP & PLANNER -->
+        <section id="view-planner" class="view-panel max-w-5xl mx-auto px-6 pt-28 pb-32 hidden fade-in-section space-y-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="font-display-lg text-display-lg text-primary leading-none">AI Strategy Map</h2>
+                    <p class="font-body-sm text-on-surface-variant text-xs mt-1">Autonomous study planning, timetable ingestion, and Accept/Edit/Reject workflow controls.</p>
+                </div>
+                <div id="plan-synced-badge" class="hidden font-label-caps text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/30 px-4 py-1.5 rounded-full flex items-center gap-1.5 text-xs shadow-sm">
+                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                    <span>Plan Accepted & Synced</span>
+                </div>
+            </div>
+
+            <!-- Ingestion Form -->
+            <div class="bg-surface-card p-6 rounded-[24px] border border-white/10 space-y-4 shadow-xl glow-indigo">
+                <div class="flex justify-between items-center flex-wrap gap-2 border-b border-white/10 pb-3">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-accent-indigo text-2xl">event_note</span>
+                        <div>
+                            <h3 class="font-headline-md text-xl text-primary font-medium">Ingest Timetable, Assignments & Goal Preferences</h3>
+                            <p class="font-body-sm text-xs text-on-surface-variant">Paste your weekly lecture timetable, assignment due dates, and study intensity preferences.</p>
+                        </div>
+                    </div>
+                    <button onclick="quickFillSamplePlannerData()" class="bg-surface-container hover:bg-surface-bright text-accent-indigo border border-accent-indigo/30 px-3.5 py-1.5 rounded-full font-label-caps text-xs font-bold transition-all shadow-sm">
+                        ⚡ 1-Click Sample Timetable
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <label class="font-label-caps text-accent-indigo block mb-1 font-bold">📅 WEEKLY TIMETABLE SCHEDULE</label>
+                        <textarea id="ingest-timetable-text" placeholder="e.g., Mon/Wed 09:00 AM - 11:00 AM Architecture 101&#10;Tue/Thu 02:00 PM - 04:00 PM History of Urban Planning" class="w-full h-24 bg-[#181818] text-primary border border-white/20 placeholder-white/40 rounded-xl p-3 text-xs focus:outline-none focus:border-accent-indigo font-body-sm font-semibold shadow-inner"></textarea>
+                    </div>
+                    <div>
+                        <label class="font-label-caps text-accent-emerald block mb-1 font-bold">📝 UPCOMING ASSIGNMENTS & DUE DATES</label>
+                        <textarea id="ingest-assignments-text" placeholder="e.g., Urban Planning Essay (2,500 words) Due Oct 25&#10;Structural FEA Matrix Problem Set Due Oct 28" class="w-full h-24 bg-[#181818] text-primary border border-white/20 placeholder-white/40 rounded-xl p-3 text-xs focus:outline-none focus:border-accent-emerald font-body-sm font-semibold shadow-inner"></textarea>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <label class="font-label-caps text-on-surface-variant block mb-1 font-bold">🎯 TARGET GPA GOAL</label>
+                        <input id="ingest-target-gpa" type="text" value="3.92 GPA" class="w-full bg-[#181818] text-primary border border-white/20 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent-indigo font-bold shadow-inner"/>
+                    </div>
+                    <div>
+                        <label class="font-label-caps text-on-surface-variant block mb-1 font-bold">⚡ STUDY INTENSITY PREFERENCE</label>
+                        <select id="ingest-intensity" class="w-full bg-[#181818] text-primary border border-white/20 rounded-xl px-4 py-2.5 text-xs focus:outline-none font-bold shadow-inner cursor-pointer">
+                            <option value="Balanced" class="bg-[#181818] text-primary">Balanced (Optimal Focus)</option>
+                            <option value="High Intensity" class="bg-[#181818] text-primary">High Intensity (Exam Sprint Mode)</option>
+                            <option value="Light Rest" class="bg-[#181818] text-primary">Light Rest (Recovery Cadence)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button onclick="ingestTimetableAndGoals()" class="bg-accent-indigo text-primary px-8 py-3 rounded-full font-label-caps text-xs font-bold hover:scale-105 transition-transform shadow-xl">
+                        Generate AI Plan & Reminders →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Proposed Plan & Progress Tracking -->
+            <div id="proposed-plan-container" class="hidden bg-surface-card p-6 rounded-[24px] border border-accent-emerald/40 space-y-4 shadow-xl glow-emerald">
+                <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                    <span class="font-label-caps text-accent-emerald text-xs font-bold">📋 PROPOSED AI STUDY PLAN & AUTOMATED REMINDERS</span>
+                    <span id="plan-reminders-count" class="font-label-caps text-xs text-accent-emerald font-bold">✓ 3 Reminders Auto-Set</span>
+                </div>
+
+                <!-- Progress Tracking Bar -->
+                <div class="bg-surface-container p-4 rounded-xl border border-white/10 space-y-2">
+                    <div class="flex justify-between items-center text-xs font-label-caps font-bold">
+                        <span class="text-primary">ACTIVE PLAN COMPLETION PROGRESS</span>
+                        <span id="planner-progress-text" class="text-accent-emerald">0 / 3 Tasks Completed (0%)</span>
+                    </div>
+                    <div class="w-full bg-surface-bright rounded-full h-3 overflow-hidden border border-white/5">
+                        <div id="planner-progress-bar" class="bg-gradient-to-r from-accent-indigo to-accent-emerald h-full transition-all duration-500 rounded-full" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div id="proposed-plan-items-list" class="space-y-3"></div>
+
+                <!-- Workflow Controls: Accept, Edit, Reject -->
+                <div class="flex flex-wrap gap-3 pt-4 border-t border-white/10 justify-end">
+                    <button onclick="handlePlanAction('REJECT')" class="bg-surface-container border border-accent-clay/40 text-accent-clay px-6 py-2.5 rounded-full font-label-caps text-xs font-bold hover:bg-accent-clay/20 transition-all">Reject Plan ❌</button>
+                    <button onclick="handlePlanAction('EDIT')" class="bg-surface-container border border-white/10 text-primary px-6 py-2.5 rounded-full font-label-caps text-xs font-bold hover:bg-surface-bright transition-all">Edit Plan ✏️</button>
+                    <button onclick="handlePlanAction('ACCEPT')" class="bg-accent-emerald text-primary px-8 py-2.5 rounded-full font-label-caps text-xs font-bold hover:scale-105 transition-transform shadow-xl">Accept Plan ✓</button>
+                </div>
+            </div>
+
+            <div id="planner-tasks-container" class="space-y-6"></div>
+
+            <div class="glass-panel p-6 rounded-2xl border-accent-indigo/30">
+                <p id="planner-ai-suggestion" class="font-body-lg text-primary italic">"Schedule optimized by Python SchedulerAgent."</p>
+            </div>
+        </section>
+
+        <!-- VIEW 3: CALENDAR DIARY -->
+        <section id="view-calendar" class="view-panel max-w-6xl mx-auto px-6 pt-28 pb-40 hidden fade-in-section space-y-8">
+            <div class="flex justify-between items-end">
+                <div>
+                    <h1 class="font-display-lg text-display-lg text-primary">Academic Calendar</h1>
+                    <p class="font-body-sm text-on-surface-variant text-xs mt-1">Interactive monthly milestone grid, exam dates, and daily time-blocked schedule.</p>
+                </div>
+                <button onclick="triggerQuickAction('Reschedule my week')" class="bg-accent-indigo text-primary px-5 py-2.5 rounded-full font-label-caps text-xs font-bold hover:scale-105 shadow-md">
+                    + Add Milestone Event
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-gradient-to-br from-surface-card to-[#1c1b1b] border border-accent-indigo/40 rounded-[24px] shadow-xl space-y-2 glow-indigo">
+                    <span class="font-label-caps text-accent-indigo text-xs font-bold uppercase tracking-widest">EXAM COUNTDOWN</span>
+                    <h2 class="font-display-lg text-2xl text-primary font-bold">14 Days Until Architecture Midterm</h2>
+                    <p class="font-body-sm text-xs text-on-surface-variant">Unit 4: Brutalist Concrete & Spatial Theory • Target Grade: A</p>
+                </div>
+                <div class="p-6 bg-gradient-to-br from-surface-card to-[#1c1b1b] border border-accent-emerald/40 rounded-[24px] shadow-xl space-y-2 glow-emerald">
+                    <span class="font-label-caps text-accent-emerald text-xs font-bold uppercase tracking-widest">SUBMISSION DEADLINE</span>
+                    <h2 class="font-display-lg text-2xl text-primary font-bold">18 Days Until Urban Planning Essay</h2>
+                    <p class="font-body-sm text-xs text-on-surface-variant">Topic: Ebenezer Howard Garden Cities • 2,500 Words</p>
+                </div>
+            </div>
+
+            <div class="bg-surface-card p-6 rounded-[28px] border border-white/10 space-y-6 shadow-xl">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-headline-md text-xl text-primary font-medium">July / August 2026</h3>
+                    <div class="flex gap-2">
+                        <span class="font-label-caps text-[10px] bg-accent-indigo/20 text-accent-indigo px-3 py-1 rounded-full border border-accent-indigo/30">Exams</span>
+                        <span class="font-label-caps text-[10px] bg-accent-emerald/20 text-accent-emerald px-3 py-1 rounded-full border border-accent-emerald/30">Submissions</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-7 gap-2 text-center font-label-caps text-xs text-on-surface-variant border-b border-white/10 pb-3">
+                    <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
+                </div>
+
+                <div class="grid grid-cols-7 gap-2 text-xs">
+                    <div class="p-3 bg-surface-container/30 rounded-xl opacity-40">26</div>
+                    <div class="p-3 bg-surface-container/30 rounded-xl opacity-40">27</div>
+                    <div class="p-3 bg-surface-container/30 rounded-xl opacity-40">28</div>
+                    <div class="p-3 bg-surface-container/30 rounded-xl opacity-40">29</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary font-bold">30</div>
+                    <div class="p-3 bg-accent-indigo/30 border border-accent-indigo rounded-xl text-primary font-bold shadow-md">31★</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">1</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">2</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">3</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">4</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">5</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">6</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">7</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">8</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">9</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">10</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">11</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">12</div>
+                    <div class="p-3 bg-accent-indigo/40 border border-accent-indigo/60 rounded-xl text-primary font-bold">13📝</div>
+                    <div class="p-3 bg-accent-emerald/40 border border-accent-emerald/60 rounded-xl text-primary font-bold">14🎓</div>
+                    <div class="p-3 bg-surface-container/60 rounded-xl text-primary">15</div>
+                </div>
+            </div>
+
+            <div class="bg-surface-card p-6 rounded-[28px] border border-white/10 space-y-4 shadow-xl">
+                <h3 class="font-headline-md text-xl text-primary font-medium">Today's Time-Blocked Schedule</h3>
+                <div class="space-y-3">
+                    <div class="p-4 bg-surface-container rounded-2xl border border-white/5 flex justify-between items-center">
+                        <div class="space-y-0.5">
+                            <span class="font-label-caps text-xs text-accent-indigo">09:00 AM - 11:30 AM (PEAK FOCUS)</span>
+                            <h4 class="font-headline-md text-sm text-primary font-medium">Structural Mechanics FEA Matrix Stiffness Deep Work</h4>
+                        </div>
+                        <button onclick="switchTab('timer')" class="bg-accent-indigo text-primary px-4 py-1.5 rounded-full font-label-caps text-xs font-bold hover:scale-105 shadow-md">Start Focus →</button>
+                    </div>
+                    <div class="p-4 bg-surface-container rounded-2xl border border-white/5 flex justify-between items-center">
+                        <div class="space-y-0.5">
+                            <span class="font-label-caps text-xs text-accent-emerald">02:00 PM - 03:30 PM</span>
+                            <h4 class="font-headline-md text-sm text-primary font-medium">History of Urban Planning Assignment Draft</h4>
+                        </div>
+                        <button onclick="switchTab('aitools')" class="bg-accent-emerald/20 text-accent-emerald px-4 py-1.5 rounded-full font-label-caps text-xs font-bold hover:bg-accent-emerald/40">Open Notes →</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: SUBJECTS LIBRARY -->
+        <section id="view-subjects" class="view-panel max-w-7xl mx-auto px-6 pt-28 pb-40 hidden fade-in-section space-y-8">
+            <div class="flex justify-between items-end">
+                <div>
+                    <h1 class="font-display-lg text-display-lg text-primary">Your Subjects</h1>
+                    <p class="font-body-sm text-on-surface-variant text-xs mt-1">Curated academic pursuits synced with Python SQLite DB.</p>
+                </div>
+                <button onclick="openUploadWizard()" class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded-full font-label-caps text-xs font-semibold hover:scale-105 shadow-md">+ ADD NEW SUBJECT</button>
+            </div>
+            <div id="subjects-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+        </section>
+
+        <!-- VIEW 5: TIMER -->
+        <section id="view-timer" class="view-panel max-w-3xl mx-auto px-6 pt-28 pb-40 hidden fade-in-section space-y-8 text-center">
+            <div>
+                <h1 class="font-display-lg text-display-lg text-primary">Focus Sanctuary</h1>
+                <p class="font-body-sm text-on-surface-variant text-xs mt-1">25-minute Pomodoro deep work sprint engine synced with Python AnalyticsAgent.</p>
+            </div>
+
+            <div class="flex justify-center gap-3">
+                <button onclick="setTimerDuration(1500)" class="bg-surface-card border border-white/10 hover:border-accent-indigo text-primary px-5 py-2 rounded-full font-label-caps text-xs font-bold shadow-sm">25 Min Focus</button>
+                <button onclick="setTimerDuration(300)" class="bg-surface-card border border-white/10 hover:border-accent-emerald text-primary px-5 py-2 rounded-full font-label-caps text-xs font-bold shadow-sm">5 Min Break</button>
+                <button onclick="setTimerDuration(900)" class="bg-surface-card border border-white/10 hover:border-accent-clay text-primary px-5 py-2 rounded-full font-label-caps text-xs font-bold shadow-sm">15 Min Rest</button>
+            </div>
+
+            <div class="relative w-80 h-80 mx-auto flex items-center justify-center">
+                <svg class="absolute inset-0 w-full h-full -rotate-90">
+                    <circle class="text-white/10" cx="50%" cy="50%" fill="none" r="45%" stroke="currentColor" stroke-width="2"></circle>
+                    <circle id="timer-progress-ring" class="text-accent-indigo transition-all duration-1000 ease-linear" cx="50%" cy="50%" fill="none" r="45%" stroke="currentColor" stroke-dasharray="900" stroke-dashoffset="0" stroke-width="3"></circle>
+                </svg>
+                <div class="text-center space-y-2 z-10">
+                    <span id="timer-clock-display" class="font-display-lg text-6xl text-primary tracking-tighter select-none font-bold block">25:00</span>
+                    <span class="font-label-caps text-accent-indigo text-xs tracking-widest block uppercase font-bold">DEEP WORK SPRINT</span>
+                </div>
+            </div>
+
+            <div class="flex justify-center items-center gap-4 pt-2">
+                <button onclick="resetTimer()" class="px-6 py-3 rounded-full border border-white/10 text-on-surface-variant font-label-caps text-xs font-bold hover:bg-surface-bright">Reset</button>
+                <button id="btn-toggle-timer" onclick="toggleTimer()" class="px-10 py-3.5 rounded-full bg-accent-indigo text-primary font-label-caps text-xs font-bold shadow-xl hover:scale-105 transition-transform">Start Focus →</button>
+            </div>
+
+            <div class="glass-panel p-4 rounded-2xl max-w-md mx-auto flex justify-between items-center text-xs font-label-caps text-on-surface-variant shadow-md">
+                <span>🔥 Sessions Completed: <strong class="text-primary">4 Sprints</strong></span>
+                <span>⭐ XP Earned: <strong class="text-accent-emerald">+200 XP</strong></span>
+            </div>
+        </section>
+
+        <!-- VIEW 6: RHYTHM -->
+        <section id="view-rhythm" class="view-panel max-w-5xl mx-auto px-6 pt-28 pb-40 hidden fade-in-section space-y-8">
+            <div>
+                <h1 class="font-display-lg text-display-lg text-primary">Personal Rhythm & Analytics</h1>
+                <p class="font-body-sm text-on-surface-variant text-xs mt-1">Real-time focus pulse scores, energy window predictions, and procrastination metrics. Click any card for deep AI insights.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div onclick="openFocusPulseModal()" class="bg-surface-card p-6 rounded-[24px] border border-accent-emerald/40 space-y-2 shadow-xl cursor-pointer hover:border-accent-emerald hover:scale-[1.02] transition-all glow-emerald">
+                    <div class="flex justify-between items-center text-accent-emerald">
+                        <span class="font-label-caps text-xs font-bold">FOCUS PULSE SCORE</span>
+                        <span class="material-symbols-outlined text-lg">insights</span>
+                    </div>
+                    <h3 class="font-headline-lg text-4xl text-primary font-bold">84 Optimal</h3>
+                    <p class="font-body-sm text-xs text-on-surface-variant">Weekly consistency trend is 18% higher than average.</p>
+                    <span class="font-label-caps text-[10px] text-accent-emerald block font-bold pt-1">DEEP ANALYSIS →</span>
+                </div>
+
+                <div onclick="openBurnoutRiskModal()" class="bg-surface-card p-6 rounded-[24px] border border-accent-clay/40 space-y-2 shadow-xl cursor-pointer hover:border-accent-clay hover:scale-[1.02] transition-all glow-clay">
+                    <div class="flex justify-between items-center text-accent-clay">
+                        <span class="font-label-caps text-xs font-bold">BURNOUT RISK SCORE</span>
+                        <span class="material-symbols-outlined text-lg">health_and_safety</span>
+                    </div>
+                    <h3 class="font-headline-lg text-4xl text-primary font-bold">12% Stable</h3>
+                    <p class="font-body-sm text-xs text-on-surface-variant">Recommended 25-minute Pomodoro cadence is in harmony.</p>
+                    <span class="font-label-caps text-[10px] text-accent-clay block font-bold pt-1">WORKLOAD BREAKDOWN →</span>
+                </div>
+
+                <div onclick="openEnergyWindowModal()" class="bg-surface-card p-6 rounded-[24px] border border-accent-indigo/40 space-y-2 shadow-xl cursor-pointer hover:border-accent-indigo hover:scale-[1.02] transition-all glow-indigo">
+                    <div class="flex justify-between items-center text-accent-indigo">
+                        <span class="font-label-caps text-xs font-bold">PEAK ENERGY WINDOW</span>
+                        <span class="material-symbols-outlined text-lg">schedule</span>
+                    </div>
+                    <h3 class="font-headline-md text-xl text-primary font-bold">09:00 AM - 11:30 AM</h3>
+                    <p class="font-body-sm text-xs text-on-surface-variant">85% of complex tasks completed during morning peak.</p>
+                    <span class="font-label-caps text-[10px] text-accent-indigo block font-bold pt-1">HOURLY ALERTNESS →</span>
+                </div>
+            </div>
+
+            <div onclick="openAnalyticsReportModal()" class="bg-surface-card p-6 rounded-[24px] border border-white/10 space-y-4 shadow-xl cursor-pointer hover:border-accent-indigo hover:scale-[1.01] transition-all">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-headline-md text-xl text-primary font-medium">Python AnalyticsAgent Insights</h3>
+                    <span class="font-label-caps text-xs text-accent-indigo bg-accent-indigo/10 px-3 py-1 rounded-full border border-accent-indigo/30">FULL REPORT →</span>
+                </div>
+                <p class="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+                    "Bhavesh, your study rhythm shows high retention during 25-minute deep focus sprints. 
+                    Maintaining your 21-day streak will keep your projected CGPA at 3.92 GPA. Click here to view your complete cognitive performance breakdown."
+                </p>
+            </div>
+        </section>
+
+        <!-- VIEW 7: AI TOOLS -->
+        <section id="view-aitools" class="view-panel max-w-5xl mx-auto px-6 pt-28 pb-32 hidden fade-in-section space-y-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="font-display-lg text-display-lg text-primary mb-1">Subject-Wise AI Tools Engine</h1>
+                    <p class="font-body-sm text-on-surface-variant text-xs">Generate quizzes, flashcards, and notes summaries tailored to your active enrolled subjects.</p>
+                </div>
+                <div class="flex items-center gap-2 bg-surface-card border border-white/10 rounded-full px-4 py-2 shadow-md">
+                    <span class="font-label-caps text-xs text-accent-indigo font-bold">ACTIVE SUBJECT:</span>
+                    <select id="tool-subject-select" onchange="handleSubjectSelectionChange()" class="bg-transparent text-xs text-primary font-bold focus:outline-none cursor-pointer">
+                        <option value="Architecture 101" class="bg-surface text-primary">Architecture 101</option>
+                        <option value="History of Urban Planning" class="bg-surface text-primary">History of Urban Planning</option>
+                        <option value="Structural Mechanics II" class="bg-surface text-primary">Structural Mechanics II</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- PDF Upload & Custom Notes Box -->
+            <div class="bg-surface-card p-6 rounded-[24px] border border-accent-indigo/40 space-y-4 shadow-xl glow-indigo">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-accent-indigo text-2xl">upload_file</span>
+                    <div>
+                        <h3 class="font-headline-md text-xl text-primary font-medium">Upload PDF Notes or Paste Text</h3>
+                        <p class="font-body-sm text-xs text-on-surface-variant">Upload a PDF or paste lecture notes to auto-generate instant revision summaries, MCQs, and flashcards.</p>
+                    </div>
+                </div>
+
+                <!-- PDF File Drag & Drop Input Zone -->
+                <div id="pdf-file-dropzone" onclick="document.getElementById('pdf-file-input').click()" class="border-2 border-dashed border-white/20 hover:border-accent-indigo rounded-2xl p-6 text-center cursor-pointer bg-surface-container/40 hover:bg-surface-container/70 transition-all space-y-2">
+                    <span class="material-symbols-outlined text-accent-indigo text-3xl">picture_as_pdf</span>
+                    <div class="text-xs font-label-caps text-primary font-bold" id="pdf-file-label">
+                        📁 Click to Select PDF / Notes File or Drag & Drop Here (.pdf, .txt, .md)
+                    </div>
+                    <span class="font-body-sm text-[10px] text-on-surface-variant block">Supported: PDF, Text, Markdown lecture notes</span>
+                    <input type="file" id="pdf-file-input" accept=".pdf,.txt,.md,.doc,.docx" onchange="handlePDFFileSelect(event)" class="hidden"/>
+                </div>
+
+                <textarea id="notes-text-input" placeholder="Or paste your lecture notes, textbook excerpts, or topic formulas here..." class="w-full h-24 bg-surface-container border border-white/10 rounded-2xl p-4 text-xs text-primary focus:outline-none focus:border-accent-indigo font-body-sm"></textarea>
+
+                <div class="flex flex-wrap gap-3 items-center justify-between pt-1">
+                    <span id="uploaded-file-status" class="font-label-caps text-xs text-accent-emerald hidden font-bold">✓ PDF Loaded: Ready to process</span>
+                    <button onclick="processCustomNotes()" class="bg-accent-indigo text-primary px-8 py-3 rounded-full font-label-caps text-xs font-bold hover:scale-105 transition-transform shadow-xl">
+                        Process PDF/Notes & Generate Quiz + Flashcards →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notes Executive Summary Box -->
+            <div id="notes-summary-container" class="hidden bg-surface-card p-6 rounded-[24px] border border-accent-emerald/40 space-y-3 shadow-xl glow-emerald">
+                <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                    <span id="summary-file-badge" class="font-label-caps text-xs text-accent-emerald font-bold">📄 PDF EXECUTIVE REVISION SUMMARY</span>
+                    <span class="font-label-caps text-[10px] bg-accent-emerald/20 text-accent-emerald px-2.5 py-0.5 rounded-full font-bold">SYNCS WITH RAG SEARCH</span>
+                </div>
+                <div id="summary-text-body" class="font-body-sm text-xs text-primary leading-relaxed"></div>
+            </div>
+
+            <!-- High Contrast AI Tool Trigger Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-surface-card p-6 rounded-[24px] border border-accent-indigo/40 space-y-4 shadow-xl">
+                    <div class="flex items-center gap-2 text-accent-indigo">
+                        <span class="material-symbols-outlined text-2xl">quiz</span>
+                        <h3 class="font-headline-md text-xl text-primary font-medium">Python QuizAgent</h3>
+                    </div>
+                    <p class="font-body-sm text-xs text-on-surface-variant">Generate practice quizzes with instant answer grading for the selected subject.</p>
+                    <button onclick="fetchPythonQuiz()" class="w-full bg-accent-indigo text-primary py-3 rounded-full font-label-caps text-xs font-bold shadow-lg hover:scale-[1.02] transition-transform">Generate Subject Quiz →</button>
+                </div>
+
+                <div class="bg-surface-card p-6 rounded-[24px] border border-accent-emerald/40 space-y-4 shadow-xl">
+                    <div class="flex items-center gap-2 text-accent-emerald">
+                        <span class="material-symbols-outlined text-2xl">style</span>
+                        <h3 class="font-headline-md text-xl text-primary font-medium">Python FlashcardAgent</h3>
+                    </div>
+                    <p class="font-body-sm text-xs text-on-surface-variant">Extract core formulas, key concept definitions, and memory scores.</p>
+                    <button onclick="fetchPythonFlashcards()" class="w-full bg-accent-emerald text-primary py-3 rounded-full font-label-caps text-xs font-bold shadow-lg hover:scale-[1.02] transition-transform">Generate Subject Flashcards →</button>
+                </div>
+            </div>
+
+            <!-- Interactive Quiz Section -->
+            <div id="active-quiz-container" class="hidden bg-surface-card p-6 rounded-[24px] border border-accent-indigo/40 space-y-4 shadow-xl glow-indigo">
+                <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                    <span id="quiz-subject-badge" class="font-label-caps text-xs text-accent-indigo font-bold">QUIZ: ARCHITECTURE 101</span>
+                    <span id="quiz-score-tracker" class="font-label-caps text-xs text-accent-emerald font-bold">Score: 0/0</span>
+                </div>
+                <p id="quiz-question-text" class="font-headline-md text-sm text-primary font-medium"></p>
+                <div id="quiz-options-list" class="space-y-2"></div>
+                <div id="quiz-feedback-box" class="hidden p-3 rounded-xl text-xs font-body-sm"></div>
+            </div>
+
+            <!-- Interactive Flashcard Deck Section -->
+            <div id="active-flashcards-container" class="hidden bg-surface-card p-6 rounded-[24px] border border-accent-emerald/40 space-y-4 shadow-xl glow-emerald">
+                <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                    <span id="flashcard-subject-badge" class="font-label-caps text-xs text-accent-emerald font-bold">FLASHCARDS: ARCHITECTURE 101</span>
+                    <span id="flashcard-deck-index" class="font-label-caps text-xs text-on-surface-variant font-bold">Card 1 of 2</span>
+                </div>
+                
+                <div id="flashcard-card-element" onclick="flipCurrentFlashcard()" class="bg-surface-container p-8 rounded-2xl text-center space-y-3 border border-white/10 cursor-pointer hover:border-accent-emerald transition-all min-h-[160px] flex flex-col justify-center items-center shadow-inner">
+                    <div id="flashcard-content" class="space-y-2"></div>
+                    <span class="font-label-caps text-[10px] text-accent-emerald opacity-70 block">💡 CLICK CARD TO FLIP DEFINITION / CONCEPT</span>
+                </div>
+
+                <div class="flex justify-between items-center pt-2">
+                    <button onclick="prevFlashcard()" class="bg-surface-container hover:bg-surface-bright text-primary px-5 py-2 rounded-full font-label-caps text-xs font-bold border border-white/10">← Prev Card</button>
+                    <button onclick="nextFlashcard()" class="bg-accent-emerald text-primary px-6 py-2 rounded-full font-label-caps text-xs font-bold hover:scale-105 shadow-md">Next Card →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 8: ECHOES AI MENTOR -->
+        <section id="view-echoes" class="view-panel max-w-4xl mx-auto px-6 pt-28 pb-32 hidden fade-in-section space-y-6">
+            <div class="flex justify-between items-end">
+                <div>
+                    <h2 class="font-display-lg text-display-lg text-primary leading-none mb-1">Echoes AI Mentor</h2>
+                    <p class="font-body-sm text-on-surface-variant text-xs">Conversational AI study coach & academic mentor.</p>
+                </div>
+                <button onclick="clearEchoesChat()" class="font-label-caps text-xs text-on-surface-variant hover:text-primary flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">delete</span> Clear Chat
+                </button>
+            </div>
+
+            <div class="flex flex-wrap gap-2 items-center">
+                <span class="font-label-caps text-xs text-accent-indigo font-bold">1-CLICK PROMPTS:</span>
+                <button onclick="sendPresetEchoes('Conduct my Oral Viva on Architecture 101')" class="bg-surface-container hover:bg-surface-bright border border-white/10 text-primary px-3 py-1.5 rounded-full font-label-caps text-[10px] shadow-sm">🎓 "Conduct Oral Viva"</button>
+                <button onclick="sendPresetEchoes('Explain Béton Brut in simple terms')" class="bg-surface-container hover:bg-surface-bright border border-white/10 text-primary px-3 py-1.5 rounded-full font-label-caps text-[10px] shadow-sm">📝 "Explain Béton Brut"</button>
+                <button onclick="sendPresetEchoes('What should I focus on today?')" class="bg-surface-container hover:bg-surface-bright border border-white/10 text-primary px-3 py-1.5 rounded-full font-label-caps text-[10px] shadow-sm">⚡ "Today's Priority Focus"</button>
+                <button onclick="sendPresetEchoes('How prepared am I for my midterm?')" class="bg-surface-container hover:bg-surface-bright border border-white/10 text-primary px-3 py-1.5 rounded-full font-label-caps text-[10px] shadow-sm">📊 "How Prepared Am I?"</button>
+            </div>
+
+            <div class="bg-surface-card rounded-[24px] border border-white/10 p-6 shadow-2xl flex flex-col h-[460px]">
+                <div id="echoes-chat-stream" class="flex-1 overflow-y-auto space-y-4 pr-2">
+                    <div class="bg-surface-container p-4 rounded-2xl max-w-[85%] font-body-sm text-xs leading-relaxed text-on-surface space-y-2 border border-white/5">
+                        <div class="flex items-center justify-between font-label-caps text-[10px] text-accent-indigo font-bold">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-accent-indigo animate-pulse"></span>
+                                <span>🤖 ECHOES AI MENTOR</span>
+                            </div>
+                            <button onclick="speakLastResponse(this)" class="hover:text-primary flex items-center gap-1 text-[9px] bg-white/5 px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-xs">volume_up</span> Listen</button>
+                        </div>
+                        <p class="echoes-text-content">"Good evening, Bhavesh! How can I help with your study roadmap today?"</p>
+                    </div>
+                </div>
+
+                <div id="echoes-typing-indicator" class="hidden p-2 text-xs font-label-caps text-accent-indigo animate-pulse">
+                    🤖 Echoes AI is thinking...
+                </div>
+
+                <div class="mt-4 flex gap-2 pt-3 border-t border-white/10">
+                    <input id="echoes-chat-input" type="text" placeholder="Ask Echoes anything or type 'Conduct my viva'..." onkeydown="if(event.key==='Enter') sendEchoesMessage()" class="flex-1 bg-surface-container border border-white/10 rounded-full px-5 py-2.5 text-xs text-primary focus:outline-none focus:border-accent-indigo font-body-sm shadow-inner"/>
+                    <button onclick="sendEchoesMessage()" class="bg-accent-indigo text-primary px-6 py-2.5 rounded-full font-label-caps text-xs font-bold hover:scale-105 transition-transform shadow-lg">Send →</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- DEDICATED MODALS -->
+    <div id="bunk-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-surface-card border border-accent-clay/40 rounded-[32px] p-8 max-w-2xl w-full shadow-2xl space-y-6 glow-clay">
+            <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                <div class="flex items-center gap-2 text-accent-clay">
+                    <span class="material-symbols-outlined text-2xl">warning</span>
+                    <h3 class="font-headline-lg text-2xl text-primary">Attendance & Bunk Allowance Calculator</h3>
+                </div>
+                <button onclick="closeBunkAllowanceModal()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div id="bunk-modal-content" class="space-y-4 font-body-sm text-xs"></div>
+        </div>
+    </div>
+
+    <div id="gpa-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-surface-card border border-accent-indigo/40 rounded-[32px] p-8 max-w-2xl w-full shadow-2xl space-y-6 glow-indigo">
+            <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                <div class="flex items-center gap-2 text-accent-indigo">
+                    <span class="material-symbols-outlined text-2xl">insights</span>
+                    <h3 class="font-headline-lg text-2xl text-primary">AI GPA Predictor & Exam Coach</h3>
+                </div>
+                <button onclick="closeGpaModal()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div id="gpa-modal-content" class="space-y-4 font-body-sm text-xs"></div>
+        </div>
+    </div>
+
+    <div id="graph-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-surface-card border border-accent-emerald/40 rounded-[32px] p-8 max-w-2xl w-full shadow-2xl space-y-6 glow-emerald">
+            <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                <div class="flex items-center gap-2 text-accent-emerald">
+                    <span class="material-symbols-outlined text-2xl">account_tree</span>
+                    <h3 class="font-headline-lg text-2xl text-primary">Prerequisite Knowledge Graph</h3>
+                </div>
+                <button onclick="closeGraphModal()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div id="graph-modal-content" class="space-y-4 font-body-sm text-xs"></div>
+        </div>
+    </div>
+
+    <div id="rhythm-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-surface-card border border-accent-indigo/40 rounded-[32px] p-8 max-w-2xl w-full shadow-2xl space-y-6 glow-indigo">
+            <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                <div class="flex items-center gap-2 text-accent-indigo">
+                    <span class="material-symbols-outlined text-2xl">insights</span>
+                    <h3 id="rhythm-modal-title" class="font-headline-lg text-2xl text-primary">Deep Rhythm Analysis</h3>
+                </div>
+                <button onclick="closeRhythmModal()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div id="rhythm-modal-content" class="space-y-4 font-body-sm text-xs"></div>
+        </div>
+    </div>
+
+    <div id="search-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-surface-card border border-white/20 rounded-[32px] p-8 max-w-2xl w-full shadow-2xl space-y-6">
+            <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                <div class="flex items-center gap-2 text-primary">
+                    <span class="material-symbols-outlined text-2xl">manage_search</span>
+                    <h3 id="search-modal-title" class="font-headline-lg text-2xl text-primary">RAG Semantic Search Results</h3>
+                </div>
+                <button onclick="closeRAGSearchModal()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div id="search-modal-content" class="space-y-3 font-body-sm text-xs"></div>
+        </div>
+    </div>
+
+    <div id="upload-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-surface-container-lowest border border-white/10 rounded-[32px] p-8 max-w-lg w-full shadow-2xl space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="font-headline-lg text-2xl text-primary">Python OCR Pipeline</h3>
+                <button onclick="closeUploadWizard()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <button onclick="triggerPythonOCR()" class="w-full bg-accent-emerald text-primary py-3 rounded-full font-label-caps text-xs font-bold shadow-md">Run Python OCR Extraction →</button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-surface-card border border-white/20 rounded-[32px] p-8 max-w-md w-full shadow-2xl space-y-6">
+            <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                <h3 class="font-headline-lg text-2xl text-primary">Sanctuary AI Settings</h3>
+                <button onclick="toggleSettingsModal()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div class="space-y-4 text-xs font-body-sm">
+                <div>
+                    <label class="font-label-caps text-on-surface-variant block mb-1">STUDENT NAME</label>
+                    <input id="set-user-name" type="text" value="Bhavesh Dhidaria" class="w-full bg-surface-container border border-white/10 rounded-xl px-4 py-2.5 text-primary focus:outline-none focus:border-accent-indigo"/>
+                </div>
+                <div>
+                    <label class="font-label-caps text-on-surface-variant block mb-1">PEAK FOCUS WINDOW</label>
+                    <input id="set-focus-window" type="text" value="09:00 AM - 11:30 AM" class="w-full bg-surface-container border border-white/10 rounded-xl px-4 py-2.5 text-primary focus:outline-none focus:border-accent-indigo"/>
+                </div>
+            </div>
+            <button onclick="saveSettings()" class="w-full bg-accent-indigo text-primary py-3 rounded-full font-label-caps text-xs font-bold shadow-md hover:scale-105">Save Preferences to Python DB →</button>
+        </div>
+    </div>
+
+    <!-- FLOATING BOTTOM NAVIGATION DOCK -->
+    <nav class="fixed bottom-8 left-0 right-0 z-50 flex justify-center items-center px-4">
+        <div class="bg-surface/85 backdrop-blur-2xl w-auto rounded-full border border-white/10 p-2 flex gap-1 shadow-2xl">
+            <button onclick="switchTab('home')" id="dock-home" class="dock-btn active bg-primary-container text-on-primary-container rounded-full px-5 py-2 text-xs font-bold shadow-sm">Home</button>
+            <button onclick="switchTab('planner')" id="dock-planner" class="dock-btn text-on-surface-variant px-5 py-2 text-xs">Planner</button>
+            <button onclick="switchTab('calendar')" id="dock-calendar" class="dock-btn text-on-surface-variant px-5 py-2 text-xs">Calendar</button>
+            <button onclick="switchTab('subjects')" id="dock-subjects" class="dock-btn text-on-surface-variant px-5 py-2 text-xs">Subjects</button>
+            <button onclick="switchTab('timer')" id="dock-timer" class="dock-btn text-on-surface-variant px-5 py-2 text-xs">Timer</button>
+            <button onclick="switchTab('rhythm')" id="dock-rhythm" class="dock-btn text-on-surface-variant px-5 py-2 text-xs">Rhythm</button>
+            <button onclick="switchTab('aitools')" id="dock-aitools" class="dock-btn text-on-surface-variant px-5 py-2 text-xs">AI Tools</button>
+            <button onclick="switchTab('echoes')" id="dock-echoes" class="dock-btn text-on-surface-variant px-5 py-2 text-xs">Echoes</button>
+        </div>
+    </nav>
+
+    <script>
+        const API_BASE = "http://localhost:8000/api/v1";
+        let activeProposedPlan = [];
+        let timerSeconds = 1500;
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        async function fetchDashboardFromPython() {
+            try {
+                const res = await fetch(`${API_BASE}/dashboard`);
+                const data = await res.json();
+                const ai = data.ai_insights;
+
+                if (document.getElementById('ai-daily-briefing-text')) document.getElementById('ai-daily-briefing-text').innerHTML = `"${ai.daily_briefing}"`;
+                if (document.getElementById('attendance-alert-text')) document.getElementById('attendance-alert-text').innerHTML = `<strong>Attendance Alert:</strong> ${ai.attendance_alert}`;
+                if (document.getElementById('home-gpa-summary')) document.getElementById('home-gpa-summary').innerText = `${ai.projected_gpa} Projected • ${ai.syllabus_coverage} Coverage`;
+
+                document.getElementById('home-tasks-list').innerHTML = data.tasks.map(t => `
+                    <div class="flex items-center justify-between p-3.5 bg-surface-container/60 rounded-xl border border-white/5 hover:border-white/10 transition-all">
+                        <span class="font-body-sm text-xs ${t.completed ? 'line-through text-on-surface-variant' : 'text-primary'}">${t.title}</span>
+                        <button onclick="toggleTaskInPython(${t.id})" class="font-label-caps text-[10px] bg-accent-emerald/20 text-accent-emerald px-3 py-1 rounded-full hover:bg-accent-emerald/40 transition-colors font-bold">${t.completed ? 'COMPLETED ✓' : 'MARK DONE'}</button>
+                    </div>
+                `).join('');
+
+                document.getElementById('subjects-grid-container').innerHTML = data.subjects.map(s => `
+                    <div class="glass-panel p-6 rounded-[24px] space-y-2 hover:border-accent-indigo/50 transition-all">
+                        <h3 class="font-headline-md text-lg text-primary font-medium">${s.title}</h3>
+                        <p class="font-label-caps text-xs text-on-surface-variant">${s.progress}% Complete • Attendance: ${s.attendance}%</p>
+                    </div>
+                `).join('');
+
+                document.getElementById('planner-tasks-container').innerHTML = data.tasks.map(t => `
+                    <div class="paper-card p-6 rounded-sm w-full ${t.bg_color}">
+                        <span class="font-label-caps text-[10px] bg-black/10 px-2 py-0.5 rounded font-bold">${t.tag}</span>
+                        <p class="font-headline-md text-headline-md italic leading-tight text-surface mt-2 mb-4">${t.title}</p>
+                        <span class="font-label-caps text-[11px] opacity-70 font-semibold">Priority: ${t.priority} • ${t.due_date}</span>
+                    </div>
+                `).join('');
+
+            } catch(e) { console.error(e); }
+        }
+
+        function formatMarkdownText(rawText) {
+            if (!rawText) return "";
+            return rawText
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`([^`]+)`/g, '<code class="bg-black/30 px-1.5 py-0.5 rounded text-accent-emerald">$1</code>')
+                .replace(/\n/g, '<br/>');
+        }
+
+        async function sendEchoesMessage() {
+            const input = document.getElementById('echoes-chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            const stream = document.getElementById('echoes-chat-stream');
+            const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            stream.innerHTML += `
+                <div class="bg-accent-indigo/15 border border-accent-indigo/30 p-4 rounded-2xl max-w-[85%] font-body-sm text-xs text-primary ml-auto space-y-1 shadow-md">
+                    <div class="flex items-center justify-between font-label-caps text-[9px] text-accent-indigo font-bold">
+                        <span>🧑 BHAVESH (YOU)</span>
+                        <span>${nowTime}</span>
+                    </div>
+                    <p class="text-right">${msg}</p>
+                </div>
+            `;
+            input.value = '';
+
+            document.getElementById('echoes-typing-indicator').classList.remove('hidden');
+            stream.scrollTop = stream.scrollHeight;
+
+            try {
+                const res = await fetch(`${API_BASE}/chat`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: msg })
+                });
+                const data = await res.json();
+                document.getElementById('echoes-typing-indicator').classList.add('hidden');
+
+                const formattedResponse = formatMarkdownText(data.response);
+                const replyTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                stream.innerHTML += `
+                    <div class="bg-surface-container p-4 rounded-2xl max-w-[88%] font-body-sm text-xs leading-relaxed text-on-surface space-y-3 shadow-md border border-white/5">
+                        <div class="flex items-center justify-between font-label-caps text-[10px] text-accent-emerald font-bold">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
+                                <span>🤖 ECHOES AI MENTOR</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] text-on-surface-variant">${replyTime}</span>
+                                <button onclick="speakText('${encodeURIComponent(data.response)}')" class="hover:text-primary flex items-center gap-1 text-[9px] bg-white/5 px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-xs">volume_up</span> Listen</button>
+                            </div>
+                        </div>
+                        <div class="echoes-text-content">${formattedResponse}</div>
+                        <div class="flex flex-wrap gap-1.5 pt-2 border-t border-white/5">
+                            <button onclick="sendPresetEchoes('Explain this in more detail')" class="bg-surface-card hover:bg-surface-bright text-on-surface-variant hover:text-primary px-2.5 py-1 rounded-full font-label-caps text-[9px] border border-white/5">💡 Explain more</button>
+                            <button onclick="sendPresetEchoes('Give me a real-world example')" class="bg-surface-card hover:bg-surface-bright text-on-surface-variant hover:text-primary px-2.5 py-1 rounded-full font-label-caps text-[9px] border border-white/5">📝 Give example</button>
+                            <button onclick="sendPresetEchoes('Conduct a quiz on this topic')" class="bg-surface-card hover:bg-surface-bright text-on-surface-variant hover:text-primary px-2.5 py-1 rounded-full font-label-caps text-[9px] border border-white/5">🎓 Test me</button>
+                        </div>
+                    </div>
+                `;
+                stream.scrollTop = stream.scrollHeight;
+            } catch(e) { 
+                document.getElementById('echoes-typing-indicator').classList.add('hidden');
+                console.error(e); 
+            }
+        }
+
+        function sendPresetEchoes(text) {
+            document.getElementById('echoes-chat-input').value = text;
+            sendEchoesMessage();
+        }
+
+        function clearEchoesChat() {
+            document.getElementById('echoes-chat-stream').innerHTML = `
+                <div class="bg-surface-container p-4 rounded-2xl max-w-[85%] font-body-sm text-xs leading-relaxed text-on-surface space-y-2 border border-white/5">
+                    <div class="flex items-center justify-between font-label-caps text-[10px] text-accent-indigo font-bold">
+                        <span>🤖 ECHOES AI MENTOR</span>
+                    </div>
+                    <p class="echoes-text-content">"Chat memory cleared. What topic would you like to explore today?"</p>
+                </div>
+            `;
+        }
+
+        function speakText(encodedText) {
+            const text = decodeURIComponent(encodedText).replace(/<[^>]*>/g, '');
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Speech synthesis is not supported on this browser.");
+            }
+        }
+
+        function speakLastResponse(btn) {
+            const container = btn.closest('.bg-surface-container');
+            const text = container.querySelector('.echoes-text-content').innerText;
+            speakText(encodeURIComponent(text));
+        }
+
+        function quickFillSamplePlannerData() {
+            document.getElementById('ingest-timetable-text').value = "Mon/Wed 09:00 AM - 11:00 AM Architecture 101\nTue/Thu 02:00 PM - 04:00 PM History of Urban Planning\nFri 10:00 AM - 12:00 PM Structural Mechanics II";
+            document.getElementById('ingest-assignments-text').value = "Urban Planning Essay (2,500 words) Due Oct 25\nStructural Mechanics FEA Matrix Problem Set Due Oct 28\nArchitecture Midterm Studio Portfolio Review Due Nov 02";
+            document.getElementById('ingest-target-gpa').value = "3.92 GPA";
+            document.getElementById('ingest-intensity').value = "High Intensity";
+            ingestTimetableAndGoals();
+        }
+
+        async function ingestTimetableAndGoals() {
+            const targetGpa = document.getElementById('ingest-target-gpa').value;
+            const intensity = document.getElementById('ingest-intensity').value;
+            const timetableText = document.getElementById('ingest-timetable-text') ? document.getElementById('ingest-timetable-text').value.trim() : '';
+            const assignmentsText = document.getElementById('ingest-assignments-text') ? document.getElementById('ingest-assignments-text').value.trim() : '';
+
+            try {
+                const res = await fetch(`${API_BASE}/planner/ingest`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        goals: { 
+                            target_gpa: targetGpa, 
+                            intensity: intensity,
+                            timetable_text: timetableText,
+                            assignments_text: assignmentsText
+                        }
+                    })
+                });
+                const result = await res.json();
+                activeProposedPlan = result.plan.generated_plan;
+                
+                document.getElementById('proposed-plan-container').classList.remove('hidden');
+                document.getElementById('plan-reminders-count').innerText = `✓ ${result.plan.reminders_count} Reminders Auto-Set`;
+                
+                renderProposedPlanItems();
+                updatePlannerProgressBar();
+            } catch(e) { console.error(e); }
+        }
+
+        function renderProposedPlanItems() {
+            if (!activeProposedPlan) return;
+            document.getElementById('proposed-plan-items-list').innerHTML = activeProposedPlan.map((item, idx) => `
+                <div id="plan-item-card-${idx}" class="p-4 bg-surface-container rounded-xl border border-white/10 space-y-2 transition-all hover:border-accent-indigo">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="task-chk-${idx}" onchange="toggleTaskCompletion(${idx})" ${item.completed ? 'checked' : ''} class="w-4 h-4 rounded text-accent-emerald bg-surface border-white/20 focus:ring-accent-emerald cursor-pointer"/>
+                            <span class="font-label-caps text-xs text-accent-indigo font-bold">${item.time_slot}</span>
+                        </div>
+                        <span class="font-label-caps text-[10px] text-accent-emerald bg-accent-emerald/10 px-2 py-0.5 rounded-full border border-accent-emerald/30 font-bold">🔔 ${item.reminder}</span>
+                    </div>
+                    <h4 id="task-title-${idx}" class="font-headline-md text-sm text-primary font-medium ${item.completed ? 'line-through opacity-60' : ''}">${item.activity}</h4>
+                    <p class="font-body-sm text-xs text-on-surface-variant italic">💡 AI Focus Justification: ${item.reasoning}</p>
+                </div>
+            `).join('');
+        }
+
+        function toggleTaskCompletion(idx) {
+            if (!activeProposedPlan || !activeProposedPlan[idx]) return;
+            activeProposedPlan[idx].completed = !activeProposedPlan[idx].completed;
+            renderProposedPlanItems();
+            updatePlannerProgressBar();
+        }
+
+        function updatePlannerProgressBar() {
+            if (!activeProposedPlan || activeProposedPlan.length === 0) return;
+            const completedCount = activeProposedPlan.filter(i => i.completed).length;
+            const totalCount = activeProposedPlan.length;
+            const pct = Math.round((completedCount / totalCount) * 100);
+            
+            const bar = document.getElementById('planner-progress-bar');
+            const txt = document.getElementById('planner-progress-text');
+            if (bar) bar.style.width = `${pct}%`;
+            if (txt) txt.innerText = `${completedCount} / ${totalCount} Tasks Completed (${pct}%)`;
+        }
+
+        async function handlePlanAction(actionType) {
+            if (actionType === 'EDIT') {
+                const newTitle = prompt("Edit your top priority study block title:", activeProposedPlan[0] ? activeProposedPlan[0].activity : "Deep Work Sprint");
+                if (newTitle && activeProposedPlan[0]) {
+                    activeProposedPlan[0].activity = newTitle;
+                    renderProposedPlanItems();
+                }
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/planner/action`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: actionType, plan_items: activeProposedPlan })
+                });
+                const result = await res.json();
+                
+                if (actionType === 'ACCEPT') {
+                    document.getElementById('plan-synced-badge').classList.remove('hidden');
+                    alert("✓ Plan Accepted! Automated Reminders are Active & Synced to your Dashboard.");
+                    fetchDashboardFromPython();
+                } else if (actionType === 'REJECT') {
+                    document.getElementById('proposed-plan-container').classList.add('hidden');
+                    alert("Plan Rejected. You can recalibrate your goals and regenerate anytime.");
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        let currentUploadedFileName = "Uploaded_Lecture_Notes.pdf";
+        let activeFlashcardsList = [];
+        let currentFlashcardIndex = 0;
+        let isFlashcardFlipped = false;
+
+        async function handlePDFFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            currentUploadedFileName = file.name;
+            document.getElementById('pdf-file-label').innerHTML = `📄 Selected File: <strong class="text-accent-emerald">${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)`;
+            document.getElementById('uploaded-file-status').innerText = `✓ Loaded: ${file.name}`;
+            document.getElementById('uploaded-file-status').classList.remove('hidden');
+
+            if (file.name.endsWith('.pdf') || file.type.includes('pdf')) {
+                try {
+                    document.getElementById('notes-text-input').value = `Extracting text from PDF '${file.name}'...`;
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    let fullText = "";
+                    for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
+                        const page = await pdf.getPage(i);
+                        const tokenContent = await page.getTextContent();
+                        const pageText = tokenContent.items.map(item => item.str).join(' ');
+                        fullText += `[Page ${i}]\n` + pageText + "\n\n";
+                    }
+                    document.getElementById('notes-text-input').value = fullText.trim() || `[PDF Document: ${file.name}]\nContains course concepts, definitions, and equations.`;
+                } catch(e) {
+                    console.error("PDF Parsing error:", e);
+                    document.getElementById('notes-text-input').value = `Document: ${file.name}\nExtracted course lecture notes and theoretical concepts for AI quiz generation.`;
+                }
+            } else {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('notes-text-input').value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        let activeQuizQuestions = [];
+        let currentQuizQuestionIndex = 0;
+        let quizScore = 0;
+
+        async function fetchPythonQuiz() {
+            const subject = document.getElementById('tool-subject-select').value;
+            document.getElementById('quiz-subject-badge').innerText = `QUIZ: ${subject.toUpperCase()}`;
+            try {
+                const res = await fetch(`${API_BASE}/tools/quiz?subject=${encodeURIComponent(subject)}`);
+                const data = await res.json();
+                renderQuizQuestions(data.questions, subject);
+            } catch(e) { console.error(e); }
+        }
+
+        function renderQuizQuestions(questions, subject) {
+            if (!questions || questions.length === 0) return;
+            activeQuizQuestions = questions;
+            currentQuizQuestionIndex = 0;
+            quizScore = 0;
+            renderSingleQuizQuestion(subject);
+            document.getElementById('active-quiz-container').classList.remove('hidden');
+        }
+
+        function renderSingleQuizQuestion(subject) {
+            const q = activeQuizQuestions[currentQuizQuestionIndex];
+            document.getElementById('quiz-question-text').innerHTML = `<strong class="text-accent-indigo">Q${currentQuizQuestionIndex + 1} of ${activeQuizQuestions.length}:</strong> ${q.question}`;
+            document.getElementById('quiz-score-tracker').innerText = `Score: ${quizScore}/${activeQuizQuestions.length} • Subject: ${subject}`;
+            document.getElementById('quiz-feedback-box').classList.add('hidden');
+
+            document.getElementById('quiz-options-list').innerHTML = q.options.map((opt, idx) => `
+                <button id="quiz-opt-btn-${idx}" onclick="selectQuizOption(${idx})" class="w-full text-left p-4 bg-surface-container rounded-xl text-xs text-primary hover:border-accent-indigo border border-white/10 transition-all font-body-sm hover:scale-[1.01] shadow-sm flex justify-between items-center">
+                    <span>${opt}</span>
+                    <span id="quiz-opt-icon-${idx}" class="material-symbols-outlined text-sm hidden"></span>
+                </button>
+            `).join('');
+        }
+
+        function selectQuizOption(selectedIdx) {
+            const q = activeQuizQuestions[currentQuizQuestionIndex];
+            const correctIdx = q.correct_index;
+            const box = document.getElementById('quiz-feedback-box');
+            box.classList.remove('hidden');
+
+            // Disable buttons after answer selection
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`quiz-opt-btn-${idx}`);
+                if (btn) btn.onclick = null;
+            });
+
+            const selBtn = document.getElementById(`quiz-opt-btn-${selectedIdx}`);
+            const selIcon = document.getElementById(`quiz-opt-icon-${selectedIdx}`);
+
+            if (selectedIdx === correctIdx) {
+                quizScore += 1;
+                if (selBtn) selBtn.className = "w-full text-left p-4 rounded-xl text-xs text-accent-emerald font-bold bg-accent-emerald/20 border-2 border-accent-emerald transition-all font-body-sm shadow-md flex justify-between items-center";
+                if (selIcon) { selIcon.innerText = "check_circle"; selIcon.classList.remove('hidden'); }
+                box.className = "p-4 rounded-xl text-xs font-body-sm bg-accent-emerald/20 border border-accent-emerald text-accent-emerald shadow-md animate-pulse";
+                box.innerHTML = `<strong>✓ CORRECT ANSWER! (+50 XP)</strong><p class="mt-1">${q.explanation || 'Great job!'}</p>`;
+            } else {
+                if (selBtn) selBtn.className = "w-full text-left p-4 rounded-xl text-xs text-accent-clay font-bold bg-accent-clay/20 border-2 border-accent-clay transition-all font-body-sm shadow-md flex justify-between items-center";
+                if (selIcon) { selIcon.innerText = "cancel"; selIcon.classList.remove('hidden'); }
+                
+                const correctBtn = document.getElementById(`quiz-opt-btn-${correctIdx}`);
+                if (correctBtn) correctBtn.className = "w-full text-left p-4 rounded-xl text-xs text-accent-emerald font-bold bg-accent-emerald/10 border border-accent-emerald/50 transition-all font-body-sm flex justify-between items-center";
+
+                box.className = "p-4 rounded-xl text-xs font-body-sm bg-accent-clay/20 border border-accent-clay text-accent-clay shadow-md";
+                box.innerHTML = `<strong>✗ Incorrect.</strong><p class="mt-1">${q.explanation || 'Review this topic.'}</p>`;
+            }
+
+            document.getElementById('quiz-score-tracker').innerText = `Score: ${quizScore}/${activeQuizQuestions.length} • Completed`;
+        }
+
+        async function fetchPythonFlashcards() {
+            const subject = document.getElementById('tool-subject-select').value;
+            document.getElementById('flashcard-subject-badge').innerText = `FLASHCARDS: ${subject.toUpperCase()}`;
+            try {
+                const res = await fetch(`${API_BASE}/tools/flashcards?subject=${encodeURIComponent(subject)}`);
+                const data = await res.json();
+                activeFlashcardsList = data;
+                currentFlashcardIndex = 0;
+                isFlashcardFlipped = false;
+                renderCurrentFlashcard();
+                document.getElementById('active-flashcards-container').classList.remove('hidden');
+            } catch(e) { console.error(e); }
+        }
+
+        function renderCurrentFlashcard() {
+            if (!activeFlashcardsList || activeFlashcardsList.length === 0) return;
+            const card = activeFlashcardsList[currentFlashcardIndex];
+            document.getElementById('flashcard-deck-index').innerText = `Card ${currentFlashcardIndex + 1} of ${activeFlashcardsList.length}`;
+            
+            const content = document.getElementById('flashcard-content');
+            if (isFlashcardFlipped) {
+                content.innerHTML = `
+                    <div class="space-y-3 text-left">
+                        <span class="font-label-caps text-[10px] text-accent-emerald font-bold tracking-widest block border-b border-white/10 pb-1">📖 DETAILED DEFINITION & EXPLANATION</span>
+                        <p class="font-body-sm text-xs text-primary leading-relaxed">${card.definition}</p>
+                        ${card.takeaway ? `
+                            <span class="font-label-caps text-[10px] text-accent-indigo font-bold tracking-widest block pt-2 border-b border-white/10 pb-1">🎯 REAL-WORLD APPLICATION & TAKEAWAY</span>
+                            <p class="font-body-sm text-xs text-on-surface-variant leading-relaxed">${card.takeaway}</p>
+                        ` : ''}
+                        <div class="flex justify-between items-center pt-2 text-[10px] font-label-caps text-on-surface-variant">
+                            <span>Retention Score: <strong class="text-accent-emerald">${card.memory_score || 95}%</strong></span>
+                            <span>Spaced Repetition: Active</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div class="space-y-2">
+                        <span class="font-label-caps text-xs text-accent-indigo font-bold tracking-widest block">💡 KEY CONCEPT / FORMULA</span>
+                        <h4 class="font-headline-md text-2xl text-primary font-bold italic tracking-wide">${card.concept}</h4>
+                        <span class="font-label-caps text-[10px] text-accent-indigo opacity-80 block pt-4">👇 Click Anywhere on Card to Reveal In-Depth Answer</span>
+                    </div>
+                `;
+            }
+        }
+
+        function flipCurrentFlashcard() {
+            isFlashcardFlipped = !isFlashcardFlipped;
+            renderCurrentFlashcard();
+        }
+
+        function nextFlashcard() {
+            if (activeFlashcardsList.length === 0) return;
+            currentFlashcardIndex = (currentFlashcardIndex + 1) % activeFlashcardsList.length;
+            isFlashcardFlipped = false;
+            renderCurrentFlashcard();
+        }
+
+        function prevFlashcard() {
+            if (activeFlashcardsList.length === 0) return;
+            currentFlashcardIndex = (currentFlashcardIndex - 1 + activeFlashcardsList.length) % activeFlashcardsList.length;
+            isFlashcardFlipped = false;
+            renderCurrentFlashcard();
+        }
+
+        async function processCustomNotes() {
+            let notesText = document.getElementById('notes-text-input').value.trim();
+            const subject = document.getElementById('tool-subject-select').value;
+            
+            if (!notesText) {
+                notesText = `Architectural spatial theory, béton brut concrete formulations, structural FEA matrices, and Ebenezer Howard urban planning principles for ${subject}.`;
+                document.getElementById('notes-text-input').value = notesText;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/upload/notes`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ file_name: currentUploadedFileName, file_text: notesText, subject: subject })
+                });
+                const result = await res.json();
+                const data = result.data;
+                
+                document.getElementById('summary-file-badge').innerText = `📄 ${currentUploadedFileName.toUpperCase()} REVISION SUMMARY`;
+                document.getElementById('summary-text-body').innerHTML = data.summary.replace(/\n/g, '<br/>');
+                document.getElementById('notes-summary-container').classList.remove('hidden');
+
+                renderQuizQuestions(data.quiz, subject);
+                
+                activeFlashcardsList = data.flashcards;
+                currentFlashcardIndex = 0;
+                isFlashcardFlipped = false;
+                renderCurrentFlashcard();
+                document.getElementById('active-flashcards-container').classList.remove('hidden');
+
+                window.scrollTo({ top: document.getElementById('notes-summary-container').offsetTop - 100, behavior: 'smooth' });
+            } catch(e) { console.error(e); }
+        }
+
+        function handleSubjectSelectionChange() {
+            fetchPythonQuiz();
+            fetchPythonFlashcards();
+        }
+
+        async function openBunkAllowanceModal() {
+            document.getElementById('bunk-modal').classList.remove('hidden');
+            try {
+                const res = await fetch(`${API_BASE}/attendance`);
+                const data = await res.json();
+                document.getElementById('bunk-modal-content').innerHTML = data.subjects.map(s => `
+                    <div class="p-4 bg-surface-container rounded-xl space-y-1 border ${s.attendance < 75 ? 'border-accent-clay' : 'border-white/10'} font-body-sm">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-bold text-sm text-primary">${s.title}</h4>
+                            <span class="font-label-caps text-xs ${s.attendance < 75 ? 'text-accent-clay font-bold' : 'text-accent-emerald'}">${s.attendance}% Attendance</span>
+                        </div>
+                        <p class="text-on-surface-variant text-xs">Safe Bunks Remaining: <strong>${s.safe_bunks} classes</strong></p>
+                        <p class="text-on-surface-variant text-xs">Classes Needed to Reach 75%: <strong>${s.required_classes_to_recovery} lectures</strong></p>
+                        <p class="italic text-accent-clay text-xs">${s.recommendation}</p>
+                    </div>
+                `).join('');
+            } catch(e) { console.error(e); }
+        }
+        function closeBunkAllowanceModal() { document.getElementById('bunk-modal').classList.add('hidden'); }
+
+        async function openGpaModal() {
+            document.getElementById('gpa-modal').classList.remove('hidden');
+            try {
+                const res = await fetch(`${API_BASE}/gpa`);
+                const data = await res.json();
+                document.getElementById('gpa-modal-content').innerHTML = `
+                    <div class="flex justify-between items-center p-4 bg-surface-container rounded-xl border border-white/5">
+                        <div><span class="text-on-surface-variant text-xs">Projected CGPA:</span> <strong class="text-xl text-primary block">${data.projected_cgpa}</strong></div>
+                        <div><span class="text-on-surface-variant text-xs">Target GPA:</span> <strong class="text-xl text-accent-emerald block">${data.target_gpa}</strong></div>
+                    </div>
+                    <div class="space-y-2 mt-4">
+                        ${data.breakdown.map(b => `
+                            <div class="flex justify-between p-3.5 bg-surface-container-high rounded-xl text-xs border border-white/5">
+                                <span>${b.subject} (${b.credits} Credits)</span>
+                                <span class="font-bold text-accent-indigo">${b.projected_grade} Grade • ${b.readiness} Prepared</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch(e) { console.error(e); }
+        }
+        function closeGpaModal() { document.getElementById('gpa-modal').classList.add('hidden'); }
+
+        async function openGraphModal() {
+            document.getElementById('graph-modal').classList.remove('hidden');
+            try {
+                const res = await fetch(`${API_BASE}/graph`);
+                const data = await res.json();
+                document.getElementById('graph-modal-content').innerHTML = data.nodes.map(n => `
+                    <div class="p-3.5 bg-surface-container rounded-xl flex justify-between items-center text-xs border border-white/5">
+                        <span class="font-bold text-primary">${n.name}</span>
+                        <span class="font-label-caps text-xs text-accent-emerald font-bold">${n.status}</span>
+                    </div>
+                `).join('');
+            } catch(e) { console.error(e); }
+        }
+        function closeGraphModal() { document.getElementById('graph-modal').classList.add('hidden'); }
+
+        function openFocusPulseModal() {
+            document.getElementById('rhythm-modal-title').innerText = "Focus Pulse Score Analysis";
+            document.getElementById('rhythm-modal-content').innerHTML = `
+                <div class="p-4 bg-surface-container rounded-2xl space-y-2 border border-accent-emerald/30">
+                    <div class="flex justify-between font-bold text-sm text-primary">
+                        <span>Focus Consistency Rating</span>
+                        <span class="text-accent-emerald font-label-caps">84 / 100 (Optimal)</span>
+                    </div>
+                    <p class="text-on-surface-variant text-xs">Your weekly focus pulse is <strong>18% higher</strong> than peer benchmarks in Architecture & Design programs.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-headline-md text-sm text-primary font-medium">Daily Focus Sprints Breakdown:</h4>
+                    <div class="flex justify-between p-3 bg-surface-container-high rounded-xl text-xs border border-white/5">
+                        <span>Monday (Deep Work)</span>
+                        <span class="font-bold text-accent-emerald">150 mins • 6 Sessions</span>
+                    </div>
+                    <div class="flex justify-between p-3 bg-surface-container-high rounded-xl text-xs border border-white/5">
+                        <span>Tuesday (Seminar Prep)</span>
+                        <span class="font-bold text-accent-emerald">120 mins • 5 Sessions</span>
+                    </div>
+                    <div class="flex justify-between p-3 bg-surface-container-high rounded-xl text-xs border border-white/5">
+                        <span>Wednesday (Research)</span>
+                        <span class="font-bold text-accent-emerald">180 mins • 7 Sessions</span>
+                    </div>
+                    <div class="flex justify-between p-3 bg-surface-container-high rounded-xl text-xs border border-white/5">
+                        <span>Thursday (FEA Studio)</span>
+                        <span class="font-bold text-accent-emerald">110 mins • 4 Sessions</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('rhythm-modal').classList.remove('hidden');
+        }
+
+        function openBurnoutRiskModal() {
+            document.getElementById('rhythm-modal-title').innerText = "Cognitive Load & Burnout Risk";
+            document.getElementById('rhythm-modal-content').innerHTML = `
+                <div class="p-4 bg-surface-container rounded-2xl space-y-2 border border-accent-clay/30">
+                    <div class="flex justify-between font-bold text-sm text-primary">
+                        <span>Burnout Risk Score</span>
+                        <span class="text-accent-clay font-label-caps">12% (Stable Rhythm)</span>
+                    </div>
+                    <p class="text-on-surface-variant text-xs">Your workload distribution is balanced. Cognitive strain index is low because you maintain 25-minute Pomodoro intervals.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-headline-md text-sm text-primary font-medium">Workload & Rest Recommendations:</h4>
+                    <div class="p-3.5 bg-surface-container-high rounded-xl text-xs space-y-1 border border-white/5">
+                        <span class="font-bold text-accent-clay">✓ Safe Cadence</span>
+                        <p class="text-on-surface-variant">Streak length is 21 days with 85% task completion before 12:00 PM.</p>
+                    </div>
+                    <div class="p-3.5 bg-surface-container-high rounded-xl text-xs space-y-1 border border-white/5">
+                        <span class="font-bold text-accent-emerald">✓ Recovery Rule</span>
+                        <p class="text-on-surface-variant">After 3 consecutive 25-minute sprints, take a mandatory 15-minute relaxation break.</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('rhythm-modal').classList.remove('hidden');
+        }
+
+        function openEnergyWindowModal() {
+            document.getElementById('rhythm-modal-title').innerText = "Peak Energy Window Analysis";
+            document.getElementById('rhythm-modal-content').innerHTML = `
+                <div class="p-4 bg-surface-container rounded-2xl space-y-2 border border-accent-indigo/30">
+                    <div class="flex justify-between font-bold text-sm text-primary">
+                        <span>Peak Performance Window</span>
+                        <span class="text-accent-indigo font-label-caps">09:00 AM - 11:30 AM</span>
+                    </div>
+                    <p class="text-on-surface-variant text-xs">Your cognitive alertness peaks during early morning hours. 85% of your high-complexity FEA stiffness matrix calculations are solved in this window.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-headline-md text-sm text-primary font-medium">Circadian Schedule Alignment:</h4>
+                    <div class="flex justify-between p-3 bg-surface-container-high rounded-xl text-xs border border-white/5">
+                        <span>09:00 AM - 11:30 AM</span>
+                        <span class="font-bold text-accent-indigo">⚡ Peak Alertness (Complex FEA Math)</span>
+                    </div>
+                    <div class="flex justify-between p-3 bg-surface-container-high rounded-xl text-xs border border-white/5">
+                        <span>02:00 PM - 03:30 PM</span>
+                        <span class="font-bold text-accent-clay">☕ Afternoon Dip (Light Essay Outline)</span>
+                    </div>
+                    <div class="flex justify-between p-3 bg-surface-container-high rounded-xl text-xs border border-white/5">
+                        <span>05:00 PM - 06:00 PM</span>
+                        <span class="font-bold text-accent-emerald">🌿 Evening Recovery (Flashcard Quiz)</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('rhythm-modal').classList.remove('hidden');
+        }
+
+        function openAnalyticsReportModal() {
+            document.getElementById('rhythm-modal-title').innerText = "Python AnalyticsAgent Full Report";
+            document.getElementById('rhythm-modal-content').innerHTML = `
+                <div class="p-4 bg-surface-container rounded-2xl space-y-2 border border-white/10 font-body-sm">
+                    <h4 class="font-bold text-sm text-primary">Master Academic Trajectory</h4>
+                    <p class="text-on-surface-variant text-xs leading-relaxed">
+                        Bhavesh, your study rhythm demonstrates high retention during 25-minute deep focus sprints. 
+                        Maintaining your 21-day streak will keep your projected CGPA at 3.92 GPA with 94% overall readiness across all Architecture and Urban Planning modules.
+                    </p>
+                </div>
+            `;
+            document.getElementById('rhythm-modal').classList.remove('hidden');
+        }
+
+        function closeRhythmModal() { document.getElementById('rhythm-modal').classList.add('hidden'); }
+
+        async function executeRAGSearch() {
+            const query = document.getElementById('global-search-input').value.trim();
+            if (!query) return;
+            document.getElementById('search-modal').classList.remove('hidden');
+            document.getElementById('search-modal-title').innerText = `RAG Results: "${query}"`;
+            try {
+                const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                document.getElementById('search-modal-content').innerHTML = data.results.map(r => `
+                    <div class="p-4 bg-surface-container rounded-xl space-y-1 border border-white/5">
+                        <div class="flex justify-between font-bold text-primary text-xs">
+                            <span>${r.title}</span>
+                            <span class="text-accent-indigo font-label-caps">Relevance: ${(r.relevance_score * 100).toFixed(0)}%</span>
+                        </div>
+                        <p class="text-on-surface-variant text-xs">${r.snippet}</p>
+                    </div>
+                `).join('');
+            } catch(e) { console.error(e); }
+        }
+        function closeRAGSearchModal() { document.getElementById('search-modal').classList.add('hidden'); }
+
+        async function toggleTaskInPython(taskId) {
+            try {
+                await fetch(`${API_BASE}/tasks/toggle`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ task_id: taskId })
+                });
+                fetchDashboardFromPython();
+            } catch(e) { console.error(e); }
+        }
+
+        async function triggerQuickAction(text) {
+            try {
+                const res = await fetch(`${API_BASE}/planner/replan`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ trigger_text: text })
+                });
+                const data = await res.json();
+                fetchDashboardFromPython();
+                switchTab('planner');
+            } catch(e) { console.error(e); }
+        }
+
+        function setTimerDuration(sec) {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = sec;
+            updateClockDisplay();
+            document.getElementById('btn-toggle-timer').innerText = 'Start Focus →';
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                document.getElementById('btn-toggle-timer').innerText = 'Resume';
+            } else {
+                isTimerRunning = true;
+                document.getElementById('btn-toggle-timer').innerText = 'Pause';
+                timerInterval = setInterval(() => {
+                    if (timerSeconds > 0) {
+                        timerSeconds--;
+                        updateClockDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        alert('🎉 Focus Session Complete! +100 XP awarded.');
+                        resetTimer();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = 1500;
+            updateClockDisplay();
+            document.getElementById('btn-toggle-timer').innerText = 'Start Focus →';
+        }
+
+        function updateClockDisplay() {
+            const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            const secs = (timerSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('timer-clock-display').innerText = `${mins}:${secs}`;
+        }
+
+        async function triggerPythonOCR() {
+            try {
+                const res = await fetch(`${API_BASE}/upload/ocr`, { method: 'POST' });
+                const data = await res.json();
+                alert(data.message);
+                closeUploadWizard();
+                fetchDashboardFromPython();
+                switchTab('subjects');
+            } catch(e) { console.error(e); }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
+            const target = document.getElementById(`view-${tabId}`);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.dock-btn').forEach(btn => {
+                btn.classList.remove('bg-primary-container', 'text-on-primary-container', 'font-bold', 'shadow-sm');
+                btn.classList.add('text-on-surface-variant');
+            });
+            const activeBtn = document.getElementById(`dock-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-primary-container', 'text-on-primary-container', 'font-bold', 'shadow-sm');
+                activeBtn.classList.remove('text-on-surface-variant');
+            }
+            
+            if (tabId === 'planner' && (!activeProposedPlan || activeProposedPlan.length === 0)) {
+                quickFillSamplePlannerData();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openUploadWizard() { document.getElementById('upload-modal').classList.remove('hidden'); }
+        function closeUploadWizard() { document.getElementById('upload-modal').classList.add('hidden'); }
+
+        function toggleSettingsModal() { 
+            const m = document.getElementById('settings-modal');
+            if (m) m.classList.toggle('hidden');
+        }
+
+        async function saveSettings() {
+            const name = document.getElementById('set-user-name').value;
+            const focusWindow = document.getElementById('set-focus-window').value;
+            try {
+                const res = await fetch(`${API_BASE}/user/settings`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ name: name, focus_window: focusWindow })
+                });
+                const data = await res.json();
+                alert(`✓ Settings Saved to Python DB!\nUser: ${data.name}`);
+                toggleSettingsModal();
+                fetchDashboardFromPython();
+            } catch(e) { console.error(e); }
+        }
+
+        fetchDashboardFromPython();
+    </script>
+</body>
+</html>

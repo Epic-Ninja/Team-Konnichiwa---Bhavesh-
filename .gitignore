@@ -1,0 +1,21 @@
+# Environment files & secrets
+.env
+backend/.env
+*.env
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# SQLite local database
+backend/studypilot.db
+*.db
+
+# Logs & temp files
+*.log
